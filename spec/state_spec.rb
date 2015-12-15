@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe State do
-  let(:state) { State.new(1, [:p1, :p2], :board, 80) }
+  let(:state) { State.new(1, [:p1, :p2], :board, 20) }
 
   describe "#new" do
     context "when given 4 arguments (turn, players, board, line_w)" do
@@ -57,7 +57,7 @@ describe State do
 
   describe "#line_w" do
     it "returns the correct line width" do
-      expect(state.line_w).to eq(80)
+      expect(state.line_w).to eq(20)
     end
   end
 
@@ -73,6 +73,13 @@ describe State do
         state.turn += 1
         expect(state.current_player).to eq(:p2)
       end
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the State" do
+      expect(state.to_s).to eq("\n  It is p1's turn.  \n\n"\
+                               "board")
     end
   end
 end

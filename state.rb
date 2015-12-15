@@ -13,4 +13,15 @@ class State
   def current_player
     players[(turn - 1) % players.length]
   end
+
+  def to_s
+    f_string = "\n#{status_string.center(line_w)}\n\n"
+    f_string << "#{board}"
+  end
+
+  private
+
+  def status_string
+    "It is #{current_player}'s turn."
+  end
 end
