@@ -60,4 +60,19 @@ describe State do
       expect(state.line_w).to eq(80)
     end
   end
+
+  describe "#current_player" do
+    context "when turn is odd" do
+      it "returns the first player in players" do
+        expect(state.current_player).to eq(:p1)
+      end
+    end
+
+    context "when turn is even" do
+      it "returns the second player in players" do
+        state.turn += 1
+        expect(state.current_player).to eq(:p2)
+      end
+    end
+  end
 end

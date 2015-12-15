@@ -9,4 +9,8 @@ class State
     @board = board
     @line_w = line_w
   end
+
+  def current_player
+    players[(turn - 1) % players.length]
+  end
 end
