@@ -7,4 +7,8 @@ class Square
     @rank = rank
     @piece = piece
   end
+
+  def to_s
+    "#{piece}"
+  end
 end

@@ -40,4 +40,10 @@ describe Square do
       expect(square.piece).to eq(:piece)
     end
   end
+
+  describe "#to_s" do
+    it "returns the Square's piece as a string" do
+      expect(square.to_s).to eq("piece")
+    end
+  end
 end
