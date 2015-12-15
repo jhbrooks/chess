@@ -11,7 +11,7 @@ class Row
   # Requires all squares to have the #empty? method
   def to_s
     adjustment = (line_w / 2) + (squares_string.length / 2)
-    f_string = "#{rank} #{squares_string}".rjust(adjustment)
+    "#{rank} #{squares_string}".rjust(adjustment)
   end
 
   private
