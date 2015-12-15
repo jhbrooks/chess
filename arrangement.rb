@@ -8,6 +8,7 @@ class Row
     @line_w = line_w
   end
 
+  # Requires all squares to have the #empty? method
   def to_s
     adjustment = (line_w / 2) + (squares_string.length / 2)
     f_string = "#{rank} #{squares_string}".rjust(adjustment)
@@ -15,7 +16,22 @@ class Row
 
   private
 
+  # Requires all squares to have the #empty? method
   def squares_string
-    squares.map(&:to_s).join("")
+    squares.map.with_index do |square, index|
+      if square.empty?
+        square_color(index)
+      else
+        "#{square}"
+      end
+    end.join("")
+  end
+
+  def square_color(index)
+    if rank.odd?
+      index.even? ? "@@" : "  "
+    else
+      index.even? ? "  " : "@@"
+    end
   end
 end

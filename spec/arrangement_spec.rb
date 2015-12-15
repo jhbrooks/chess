@@ -1,7 +1,21 @@
 require "spec_helper"
 
 describe Row do
-  let(:row) { Row.new(1, %w(a1 b1), 10) }
+  let(:row) do
+    Row.new(1, %w(a1 b1), 10)
+  end
+
+  let(:true_row) do
+    Row.new(1, [Square.new(:a, 1, :a1), Square.new(:b, 1, :b1)], 10)
+  end
+
+  let(:empty_row1) do
+    Row.new(1, [Square.new(:a, 1, nil), Square.new(:b, 1, nil)], 10)
+  end
+
+  let(:empty_row2) do
+    Row.new(2, [Square.new(:a, 1, nil), Square.new(:b, 1, nil)], 10)
+  end
 
   describe "#new" do
     context "when given 3 arguments (rank, squares, line_w)" do
@@ -42,8 +56,24 @@ describe Row do
   end
 
   describe "#to_s" do
-    it "returns a formatted string representing the Row" do
-      expect(row.to_s).to eq(" 1 a1b1")
+    context "when the Row is not empty" do
+      it "returns a formatted string representing the Row" do
+        expect(true_row.to_s).to eq(" 1 a1b1")
+      end
+    end
+
+    context "when the Row is empty" do
+      context "with an odd rank" do
+        it "returns a formatted string leading with a black square" do
+          expect(empty_row1.to_s).to eq(" 1 @@  ")
+        end
+      end
+
+      context "with an even rank" do
+        it "returns a formatted string leading with a white square" do
+          expect(empty_row2.to_s).to eq(" 2   @@")
+        end
+      end
     end
   end
 end
