@@ -1,7 +1,7 @@
 # This class handles the State of a game of chess
 class State
-  attr_reader :players, :line_w
-  attr_accessor :turn, :board
+  attr_reader :players, :board, :line_w
+  attr_accessor :turn
 
   def initialize(turn, players, board, line_w)
     @turn = turn

@@ -48,13 +48,6 @@ describe State do
     end
   end
 
-  describe "#board=" do
-    it "correctly sets a new board" do
-      state.board = :board2
-      expect(state.board).to eq(:board2)
-    end
-  end
-
   describe "#line_w" do
     it "returns the correct line width" do
       expect(state.line_w).to eq(20)
