@@ -8,6 +8,10 @@ class Square
     @piece = piece
   end
 
+  def empty?
+    piece.nil?
+  end
+
   def to_s
     "#{piece}"
   end
