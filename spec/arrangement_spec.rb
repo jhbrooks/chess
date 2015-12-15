@@ -40,4 +40,10 @@ describe Row do
       expect(row.line_w).to eq(10)
     end
   end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Row" do
+      expect(row.to_s).to eq(" 1 a1b1")
+    end
+  end
 end
