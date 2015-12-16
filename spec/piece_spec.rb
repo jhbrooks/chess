@@ -2,6 +2,7 @@ require "spec_helper"
 
 describe Piece do
   let(:piece) { Piece.new(:p1, :pawn) }
+  let(:true_piece) { Piece.new(Player.new(:p1, :White), :Pawn) }
 
   describe "#new" do
     context "when given 2 arguments (player, type)" do
@@ -32,6 +33,12 @@ describe Piece do
   describe "#type" do
     it "returns the correct type" do
       expect(piece.type).to eq(:pawn)
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the Piece" do
+      expect(true_piece.mark).to eq("WP")
     end
   end
 
