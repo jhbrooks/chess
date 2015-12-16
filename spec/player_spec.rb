@@ -34,4 +34,10 @@ describe Player do
       expect(player.color).to eq("White")
     end
   end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Player" do
+      expect(player.to_s).to eq("White (p1)")
+    end
+  end
 end
