@@ -63,13 +63,13 @@ describe Bishop do
 
     context "when given fewer than 1 argument" do
       it "raises an ArgumentError" do
-        expect{ Bishop.create }.to raise_error(ArgumentError)
+        expect { Bishop.create }.to raise_error(ArgumentError)
       end
     end
 
     context "when given more than 1 argument" do
       it "raises an ArgumentError" do
-        expect{ Bishop.create(1, 2) }.to raise_error(ArgumentError)
+        expect { Bishop.create(1, 2) }.to raise_error(ArgumentError)
       end
     end
   end

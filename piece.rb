@@ -18,6 +18,7 @@ class Piece
   end
 end
 
+# This class handles Bishops
 class Bishop < Piece
   def self.create(player)
     new(player, :Bishop)
