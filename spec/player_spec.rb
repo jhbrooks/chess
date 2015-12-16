@@ -35,6 +35,12 @@ describe Player do
     end
   end
 
+  describe "#mark" do
+    it "returns the first character of the Player's color" do
+      expect(player.mark).to eq("W")
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Player" do
       expect(player.to_s).to eq("White (p1)")

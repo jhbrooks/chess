@@ -7,6 +7,10 @@ class Player
     @color = color
   end
 
+  def mark
+    "#{color}"[0]
+  end
+
   def to_s
     "#{color} (#{name})"
   end
