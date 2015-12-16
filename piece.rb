@@ -17,3 +17,9 @@ class Piece
     "#{player} #{type}"
   end
 end
+
+class Bishop < Piece
+  def self.create(player)
+    new(player, :Bishop)
+  end
+end
