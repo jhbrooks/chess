@@ -86,3 +86,188 @@ describe Bishop do
     end
   end
 end
+
+describe King do
+  let(:player) { Player.new(:p1, :White) }
+  let(:king) { King.create(player) }
+
+  describe ".create" do
+    context "when given 1 argument (player)" do
+      it "returns a King object" do
+        expect(king).to be_an_instance_of(King)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { King.create }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { King.create(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the King" do
+      expect(king.mark).to eq("WK")
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the King" do
+      expect(king.to_s).to eq("White (p1) King")
+    end
+  end
+end
+
+describe Knight do
+  let(:player) { Player.new(:p1, :White) }
+  let(:knight) { Knight.create(player) }
+
+  describe ".create" do
+    context "when given 1 argument (player)" do
+      it "returns a Knight object" do
+        expect(knight).to be_an_instance_of(Knight)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Knight.create }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Knight.create(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the Knight" do
+      expect(knight.mark).to eq("WN")
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Knight" do
+      expect(knight.to_s).to eq("White (p1) Knight")
+    end
+  end
+end
+
+describe Pawn do
+  let(:player) { Player.new(:p1, :White) }
+  let(:pawn) { Pawn.create(player) }
+
+  describe ".create" do
+    context "when given 1 argument (player)" do
+      it "returns a Pawn object" do
+        expect(pawn).to be_an_instance_of(Pawn)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Pawn.create }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Pawn.create(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the Pawn" do
+      expect(pawn.mark).to eq("WP")
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Pawn" do
+      expect(pawn.to_s).to eq("White (p1) Pawn")
+    end
+  end
+end
+
+describe Queen do
+  let(:player) { Player.new(:p1, :White) }
+  let(:queen) { Queen.create(player) }
+
+  describe ".create" do
+    context "when given 1 argument (player)" do
+      it "returns a Queen object" do
+        expect(queen).to be_an_instance_of(Queen)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Queen.create }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Queen.create(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the Queen" do
+      expect(queen.mark).to eq("WQ")
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Queen" do
+      expect(queen.to_s).to eq("White (p1) Queen")
+    end
+  end
+end
+
+describe Rook do
+  let(:player) { Player.new(:p1, :White) }
+  let(:rook) { Rook.create(player) }
+
+  describe ".create" do
+    context "when given 1 argument (player)" do
+      it "returns a Rook object" do
+        expect(rook).to be_an_instance_of(Rook)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Rook.create }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Rook.create(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#mark" do
+    it "returns a mark representing the Rook" do
+      expect(rook.mark).to eq("WR")
+    end
+  end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Rook" do
+      expect(rook.to_s).to eq("White (p1) Rook")
+    end
+  end
+end

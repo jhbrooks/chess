@@ -24,3 +24,43 @@ class Bishop < Piece
     new(player, :Bishop)
   end
 end
+
+# This class handles Kings
+class King < Piece
+  def self.create(player)
+    new(player, :King)
+  end
+end
+
+# This class handles Knights
+class Knight < Piece
+  def self.create(player)
+    new(player, :Knight)
+  end
+
+  def mark
+    type_mark = "#{type}"[1].upcase
+    "#{player.mark}#{type_mark}"
+  end
+end
+
+# This class handles Pawns
+class Pawn < Piece
+  def self.create(player)
+    new(player, :Pawn)
+  end
+end
+
+# This class handles Queens
+class Queen < Piece
+  def self.create(player)
+    new(player, :Queen)
+  end
+end
+
+# This class handles Rooks
+class Rook < Piece
+  def self.create(player)
+    new(player, :Rook)
+  end
+end
