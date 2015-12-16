@@ -34,4 +34,10 @@ describe Piece do
       expect(piece.type).to eq(:pawn)
     end
   end
+
+  describe "#to_s" do
+    it "returns a formatted string representing the Piece" do
+      expect(piece.to_s).to eq("p1 pawn")
+    end
+  end
 end

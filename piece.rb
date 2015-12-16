@@ -6,4 +6,8 @@ class Piece
     @player = player
     @type = type
   end
+
+  def to_s
+    "#{player} #{type}"
+  end
 end
