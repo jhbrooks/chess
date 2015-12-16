@@ -30,6 +30,15 @@ class King < Piece
   def self.create(player)
     new(player, :King)
   end
+
+  attr_accessor :unmoved, :in_check
+
+  def initialize(player, type)
+    @player = player
+    @type = type
+    @unmoved = true
+    @in_check = false
+  end
 end
 
 # This class handles Knights
@@ -49,6 +58,14 @@ class Pawn < Piece
   def self.create(player)
     new(player, :Pawn)
   end
+
+  attr_accessor :unmoved
+
+  def initialize(player, type)
+    @player = player
+    @type = type
+    @unmoved = true
+  end
 end
 
 # This class handles Queens
@@ -62,5 +79,13 @@ end
 class Rook < Piece
   def self.create(player)
     new(player, :Rook)
+  end
+
+  attr_accessor :unmoved
+
+  def initialize(player, type)
+    @player = player
+    @type = type
+    @unmoved = true
   end
 end

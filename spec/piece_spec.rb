@@ -117,6 +117,32 @@ describe King do
     end
   end
 
+  describe "#unmoved" do
+    it "returns true after initialization" do
+      expect(king.unmoved).to be(true)
+    end
+  end
+
+  describe "#unmoved=" do
+    it "correctly sets the unmoved attribute" do
+      king.unmoved = false
+      expect(king.unmoved).to be(false)
+    end
+  end
+
+  describe "#in_check" do
+    it "returns false after initialization" do
+      expect(king.in_check).to be(false)
+    end
+  end
+
+  describe "#in_check=" do
+    it "correctly sets the in_check attribute" do
+      king.in_check = true
+      expect(king.in_check).to be(true)
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the King" do
       expect(king.to_s).to eq("White (p1) King")
@@ -191,6 +217,19 @@ describe Pawn do
     end
   end
 
+  describe "#unmoved" do
+    it "returns true after initialization" do
+      expect(pawn.unmoved).to be(true)
+    end
+  end
+
+  describe "#unmoved=" do
+    it "correctly sets the unmoved attribute" do
+      pawn.unmoved = false
+      expect(pawn.unmoved).to be(false)
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Pawn" do
       expect(pawn.to_s).to eq("White (p1) Pawn")
@@ -262,6 +301,19 @@ describe Rook do
   describe "#mark" do
     it "returns a mark representing the Rook" do
       expect(rook.mark).to eq("WR")
+    end
+  end
+
+  describe "#unmoved" do
+    it "returns true after initialization" do
+      expect(rook.unmoved).to be(true)
+    end
+  end
+
+  describe "#unmoved=" do
+    it "correctly sets the unmoved attribute" do
+      rook.unmoved = false
+      expect(rook.unmoved).to be(false)
     end
   end
 
