@@ -3,7 +3,7 @@ require "spec_helper"
 describe Piece do
   let(:piece) { Piece.new(:p1, :pawn) }
   let(:player) { Player.new(:p1, :White) }
-  let(:true_piece) { Piece.new(player, :Pawn) }
+  let(:true_piece) { Piece.new(player, :pawn) }
 
   describe "#new" do
     context "when given 2 arguments (player, type)" do
@@ -82,7 +82,7 @@ describe Bishop do
 
   describe "#to_s" do
     it "returns a formatted string representing the Bishop" do
-      expect(bishop.to_s).to eq("White (p1) Bishop")
+      expect(bishop.to_s).to eq("White (p1) bishop")
     end
   end
 end
@@ -145,7 +145,7 @@ describe King do
 
   describe "#to_s" do
     it "returns a formatted string representing the King" do
-      expect(king.to_s).to eq("White (p1) King")
+      expect(king.to_s).to eq("White (p1) king")
     end
   end
 end
@@ -182,7 +182,7 @@ describe Knight do
 
   describe "#to_s" do
     it "returns a formatted string representing the Knight" do
-      expect(knight.to_s).to eq("White (p1) Knight")
+      expect(knight.to_s).to eq("White (p1) knight")
     end
   end
 end
@@ -232,7 +232,7 @@ describe Pawn do
 
   describe "#to_s" do
     it "returns a formatted string representing the Pawn" do
-      expect(pawn.to_s).to eq("White (p1) Pawn")
+      expect(pawn.to_s).to eq("White (p1) pawn")
     end
   end
 end
@@ -269,7 +269,7 @@ describe Queen do
 
   describe "#to_s" do
     it "returns a formatted string representing the Queen" do
-      expect(queen.to_s).to eq("White (p1) Queen")
+      expect(queen.to_s).to eq("White (p1) queen")
     end
   end
 end
@@ -319,7 +319,7 @@ describe Rook do
 
   describe "#to_s" do
     it "returns a formatted string representing the Rook" do
-      expect(rook.to_s).to eq("White (p1) Rook")
+      expect(rook.to_s).to eq("White (p1) rook")
     end
   end
 end

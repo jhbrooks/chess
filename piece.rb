@@ -9,7 +9,7 @@ class Piece
 
   # Requires player to have the #mark method
   def mark
-    type_mark = "#{type}"[0]
+    type_mark = "#{type}"[0].upcase
     "#{player.mark}#{type_mark}"
   end
 
@@ -21,14 +21,14 @@ end
 # This class handles Bishops
 class Bishop < Piece
   def self.create(player)
-    new(player, :Bishop)
+    new(player, :bishop)
   end
 end
 
 # This class handles Kings
 class King < Piece
   def self.create(player)
-    new(player, :King)
+    new(player, :king)
   end
 
   attr_accessor :unmoved, :in_check
@@ -44,7 +44,7 @@ end
 # This class handles Knights
 class Knight < Piece
   def self.create(player)
-    new(player, :Knight)
+    new(player, :knight)
   end
 
   def mark
@@ -56,7 +56,7 @@ end
 # This class handles Pawns
 class Pawn < Piece
   def self.create(player)
-    new(player, :Pawn)
+    new(player, :pawn)
   end
 
   attr_accessor :unmoved
@@ -71,14 +71,14 @@ end
 # This class handles Queens
 class Queen < Piece
   def self.create(player)
-    new(player, :Queen)
+    new(player, :queen)
   end
 end
 
 # This class handles Rooks
 class Rook < Piece
   def self.create(player)
-    new(player, :Rook)
+    new(player, :rook)
   end
 
   attr_accessor :unmoved
