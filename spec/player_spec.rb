@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Player do
-  let(:player) { Player.new(:p1, "White") }
+  let(:player) { Player.new(:p1, :White) }
 
   describe "#new" do
     context "when given 2 arguments (name, color)" do
@@ -31,7 +31,7 @@ describe Player do
 
   describe "#color" do
     it "returns the correct color" do
-      expect(player.color).to eq("White")
+      expect(player.color).to eq(:White)
     end
   end
 
