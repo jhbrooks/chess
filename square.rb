@@ -1,4 +1,4 @@
-# This class handles a Square on a chess board
+# This class handles Squares on a chess board
 class Square
   attr_reader :file, :rank, :piece
 
