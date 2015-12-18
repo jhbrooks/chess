@@ -12,7 +12,8 @@ class Square
     piece.nil?
   end
 
+  # Requires piece to have the #mark method
   def to_s
-    "#{piece}"
+    "#{piece.mark}"
   end
 end

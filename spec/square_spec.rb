@@ -2,6 +2,9 @@ require "spec_helper"
 
 describe Square do
   let(:square) { Square.new(:a, 1, :piece) }
+  let(:player) { Player.new(:p1, :White) }
+  let(:piece) { Piece.new(player, :pawn) }
+  let(:true_square) { Square.new(:a, 1, piece) }
   let(:empty_square) { Square.new(:a, 1, nil) }
 
   describe "#new" do
@@ -57,8 +60,8 @@ describe Square do
   end
 
   describe "#to_s" do
-    it "returns the Square's piece as a string" do
-      expect(square.to_s).to eq("piece")
+    it "returns the Square's piece's mark as a string" do
+      expect(true_square.to_s).to eq("WP")
     end
   end
 end

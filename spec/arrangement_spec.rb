@@ -5,8 +5,10 @@ describe Row do
     Row.new(1, %w(a1 b1), 10)
   end
 
+  let(:player) { Player.new(:p1, :White) }
+  let(:piece) { Piece.new(player, :pawn) }
   let(:true_row) do
-    Row.new(1, [Square.new(:a, 1, :a1), Square.new(:b, 1, :b1)], 10)
+    Row.new(1, [Square.new(:a, 1, piece), Square.new(:b, 1, piece)], 10)
   end
 
   let(:empty_row1) do
@@ -58,7 +60,7 @@ describe Row do
   describe "#to_s" do
     context "when the Row is not empty" do
       it "returns a formatted string representing the Row" do
-        expect(true_row.to_s).to eq(" 1 a1b1")
+        expect(true_row.to_s).to eq(" 1 WPWP")
       end
     end
 
