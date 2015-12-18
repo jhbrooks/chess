@@ -1,4 +1,4 @@
-# This class handles a Row of squares
+# This class handles Rows of squares on a chess board
 class Row
   attr_reader :rank, :squares, :line_w
 

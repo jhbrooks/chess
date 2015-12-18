@@ -14,7 +14,7 @@ describe Row do
   end
 
   let(:empty_row2) do
-    Row.new(2, [Square.new(:a, 1, nil), Square.new(:b, 1, nil)], 10)
+    Row.new(2, [Square.new(:a, 2, nil), Square.new(:b, 2, nil)], 10)
   end
 
   describe "#new" do
