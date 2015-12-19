@@ -1,15 +1,14 @@
 require_relative "./arrangement.rb"
 require_relative "./square.rb"
 require_relative "./piece.rb"
-require_relative "./player.rb"
 
 # This class handles a chess Board
 class Board
   attr_reader :line_w, :squares, :rows, :cols, :diags
 
-  def initialize(line_w)
+  def initialize(players, line_w)
     @line_w = line_w
-    @squares = create_squares
+    @squares = create_squares(players)
     @rows = create_rows
     @cols = [1, 2, 3, 4, 5, 6, 7, 8]
     @diags = []
@@ -24,23 +23,22 @@ class Board
 
   private
 
-  def create_squares
+  def create_squares(players)
     squares = []
-    squares << create_black_squares
+    squares << create_black_squares(players[1])
     squares << create_empty_squares
-    squares << create_white_squares
+    squares << create_white_squares(players[0])
     squares.flatten
   end
 
-  def create_black_squares
+  def create_black_squares(player)
     black_squares = []
-    black_squares << create_black_others
-    black_squares << create_black_pawns
+    black_squares << create_black_others(player)
+    black_squares << create_black_pawns(player)
     black_squares.flatten
   end
 
-  def create_black_others
-    player = Player.new(:p2, :Black)
+  def create_black_others(player)
     pieces = [Rook.create(player), Knight.create(player),
               Bishop.create(player), Queen.create(player),
               King.create(player), Bishop.create(player),
@@ -51,8 +49,7 @@ class Board
     end
   end
 
-  def create_black_pawns
-    player = Player.new(:p2, :Black)
+  def create_black_pawns(player)
     black_pawns = []
     1.upto(8) do |file|
       black_pawns << Square.new(file, 7, Pawn.create(player))
@@ -70,15 +67,14 @@ class Board
     empty_squares
   end
 
-  def create_white_squares
+  def create_white_squares(player)
     white_squares = []
-    white_squares << create_white_pawns
-    white_squares << create_white_others
+    white_squares << create_white_pawns(player)
+    white_squares << create_white_others(player)
     white_squares.flatten
   end
 
-  def create_white_pawns
-    player = Player.new(:p1, :White)
+  def create_white_pawns(player)
     white_pawns = []
     1.upto(8) do |file|
       white_pawns << Square.new(file, 2, Pawn.create(player))
@@ -86,8 +82,7 @@ class Board
     white_pawns
   end
 
-  def create_white_others
-    player = Player.new(:p1, :White)
+  def create_white_others(player)
     pieces = [Rook.create(player), Knight.create(player),
               Bishop.create(player), Queen.create(player),
               King.create(player), Bishop.create(player),

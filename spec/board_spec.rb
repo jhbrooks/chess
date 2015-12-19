@@ -1,24 +1,25 @@
 require "spec_helper"
 
 describe Board do
-  let(:board) { Board.new(24) }
+  let(:players) { [Player.new(:p1, :White), Player.new(:p2, :Black)] }
+  let(:board) { Board.new(players, 24) }
 
   describe "#new" do
-    context "when given 1 argument (line_w)" do
+    context "when given 2 arguments (players, line_w)" do
       it "returns a Board object" do
         expect(board).to be_an_instance_of(Board)
       end
     end
 
-    context "when given fewer than 1 argument" do
+    context "when given fewer than 2 arguments" do
       it "raises an ArgumentError" do
         expect { Board.new }.to raise_error(ArgumentError)
       end
     end
 
-    context "when given more than 1 argument" do
+    context "when given more than 2 arguments" do
       it "raises an ArgumentError" do
-        expect { Board.new(1, 2) }.to raise_error(ArgumentError)
+        expect { Board.new(1, 2, 3) }.to raise_error(ArgumentError)
       end
     end
   end
