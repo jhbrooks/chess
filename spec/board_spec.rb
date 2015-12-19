@@ -31,26 +31,110 @@ describe Board do
   end
 
   describe "#squares" do
-    it "returns a collection of squares with the correct length" do
-      expect(board.squares.length).to eq(64)
+    context "returns a collection of squares such that" do
+      it "the collection is of the correct length" do
+        expect(board.squares.length).to eq(64)
+      end
+
+      it "each square is a Square object" do
+        expect(board.squares.all? do |square|
+          square.is_a?(Square)
+        end).to be(true)
+      end
+
+      it "squares at the beginning contain Black pieces" do
+        expect(board.squares[0..15].all? do |square|
+          square.piece.player.color == :Black
+        end).to be(true)
+      end
+
+      it "squares in the middle are empty" do
+        expect(board.squares[16..47].all?(&:empty?)).to be(true)
+      end
+
+      it "squares at the end contain White pieces" do
+        expect(board.squares[48..63].all? do |square|
+          square.piece.player.color == :White
+        end).to be(true)
+      end
     end
   end
 
   describe "#rows" do
-    it "returns a collection of rows with the correct length" do
-      expect(board.rows.length).to eq(8)
+    context "returns a collection of rows such that" do
+      it "the collection is of the correct length" do
+        expect(board.rows.length).to eq(8)
+      end
+
+      it "each row is a Row object" do
+        expect(board.rows.all? do |row|
+          row.is_a?(Row)
+        end).to be(true)
+      end
+
+      it "each row has a collection of squares of the correct length" do
+        expect(board.rows.all? do |row|
+          row.squares.length == 8
+        end).to be(true)
+      end
     end
   end
 
   describe "#cols" do
-    it "returns a collection of columns with the correct length" do
-      expect(board.cols.length).to eq(8)
+    context "returns a collection of columns such that" do
+      it "the collection is of the correct length" do
+        expect(board.cols.length).to eq(8)
+      end
+
+      it "each column is a Column object" do
+        expect(board.cols.all? do |col|
+          col.is_a?(Column)
+        end).to be(true)
+      end
+
+      it "each column has a collection of squares of the correct length" do
+        expect(board.cols.all? do |col|
+          col.squares.length == 8
+        end).to be(true)
+      end
     end
   end
 
   describe "#diags" do
-    it "returns a collection of diagonals with the correct length" do
-      expect(board.diags.length).to eq(30)
+    context "returns a collection of diagonals such that" do
+      it "the collection is of the correct length" do
+        expect(board.diags.length).to eq(30)
+      end
+
+      it "each diagonal is an Arrangement object" do
+        expect(board.diags.all? do |diag|
+          diag.is_a?(Arrangement)
+        end).to be(true)
+      end
+
+      it "the first up-diagonal's collection of squares is of length 1" do
+        expect(board.diags[0].squares.length).to eq(1)
+      end
+
+      it "the middle up-diagonal's collection of squares is of length 8" do
+        expect(board.diags[7].squares.length).to eq(8)
+      end
+
+      it "the last up-diagonal's collection of squares is of length 1" do
+        expect(board.diags[14].squares.length).to eq(1)
+      end
+
+      it "the first down-diagonal's collection of squares is of length 1" do
+        expect(board.diags[15].squares.length).to eq(1)
+      end
+
+      it "the middle down-diagonal's collection of squares is of length 8" do
+        expect(board.diags[22].squares.length).to eq(8)
+      end
+
+      it "the last down-diagonal's collection of squares is of length 1" do
+        expect(board.diags[29].squares.length).to eq(1)
+      end
     end
   end
 
