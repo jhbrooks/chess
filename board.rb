@@ -10,7 +10,7 @@ class Board
     @line_w = line_w
     @squares = create_squares(players)
     @rows = create_rows
-    @cols = [1, 2, 3, 4, 5, 6, 7, 8]
+    @cols = create_columns
     @diags = []
   end
 
@@ -44,14 +44,15 @@ class Board
               King.create(player), Bishop.create(player),
               Knight.create(player), Rook.create(player)]
     pieces.map.with_index do |piece, i|
-      file = i + 1
+      file = ("a".ord + i).chr.to_sym
       Square.new(file, 8, piece)
     end
   end
 
   def create_black_pawns(player)
     black_pawns = []
-    1.upto(8) do |file|
+    8.times do |i|
+      file = ("a".ord + i).chr.to_sym
       black_pawns << Square.new(file, 7, Pawn.create(player))
     end
     black_pawns
@@ -60,7 +61,8 @@ class Board
   def create_empty_squares
     empty_squares = []
     6.downto(3) do |rank|
-      1.upto(8) do |file|
+      8.times do |i|
+        file = ("a".ord + i).chr.to_sym
         empty_squares << Square.new(file, rank, nil)
       end
     end
@@ -76,7 +78,8 @@ class Board
 
   def create_white_pawns(player)
     white_pawns = []
-    1.upto(8) do |file|
+    8.times do |i|
+      file = ("a".ord + i).chr.to_sym
       white_pawns << Square.new(file, 2, Pawn.create(player))
     end
     white_pawns
@@ -88,7 +91,7 @@ class Board
               King.create(player), Bishop.create(player),
               Knight.create(player), Rook.create(player)]
     pieces.map.with_index do |piece, i|
-      file = i + 1
+      file = ("a".ord + i).chr.to_sym
       Square.new(file, 1, piece)
     end
   end
@@ -98,6 +101,14 @@ class Board
       rank = 8 - i
       target_squares = squares.select { |square| square.rank == rank }
       Row.new(rank, target_squares, line_w)
+    end
+  end
+
+  def create_columns
+    Array.new(8).map.with_index do |_e, i|
+      file = ("a".ord + i).chr.to_sym
+      target_squares = squares.select { |square| square.file == file }
+      Column.new(file, target_squares)
     end
   end
 

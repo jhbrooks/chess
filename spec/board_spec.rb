@@ -43,8 +43,8 @@ describe Board do
   end
 
   describe "#cols" do
-    it "returns the correct collection of columns" do
-      expect(board.cols).to eq([1, 2, 3, 4, 5, 6, 7, 8])
+    it "returns a collection of columns with the correct length" do
+      expect(board.cols.length).to eq(8)
     end
   end
 
