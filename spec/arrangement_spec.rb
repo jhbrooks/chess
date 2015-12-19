@@ -1,5 +1,37 @@
 require "spec_helper"
 
+describe Arrangement do
+  let(:arrangement) do
+    Arrangement.new(%w(a1 b2))
+  end
+
+  describe "#new" do
+    context "when given 1 argument (squares)" do
+      it "returns an Arrangement object" do
+        expect(arrangement).to be_an_instance_of(Arrangement)
+      end
+    end
+
+    context "when given fewer than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Arrangement.new }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 1 argument" do
+      it "raises an ArgumentError" do
+        expect { Arrangement.new(1, 2) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#squares" do
+    it "returns the correct collection of squares" do
+      expect(arrangement.squares).to eq(%w(a1 b2))
+    end
+  end
+end
+
 describe Row do
   let(:row) do
     Row.new(1, %w(a1 b1), 10)
@@ -76,6 +108,44 @@ describe Row do
           expect(empty_row2.to_s).to eq(" 2   @@")
         end
       end
+    end
+  end
+end
+
+describe Column do
+  let(:col) do
+    Column.new(:a, %w(a1 a2))
+  end
+
+  describe "#new" do
+    context "when given 2 arguments (file, squares)" do
+      it "returns a Column object" do
+        expect(col).to be_an_instance_of(Column)
+      end
+    end
+
+    context "when given fewer than 2 arguments" do
+      it "raises an ArgumentError" do
+        expect { Column.new }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when given more than 2 arguments" do
+      it "raises an ArgumentError" do
+        expect { Column.new(1, 2, 3) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#file" do
+    it "returns the correct file" do
+      expect(col.file).to eq(:a)
+    end
+  end
+
+  describe "#squares" do
+    it "returns the correct collection of squares" do
+      expect(col.squares).to eq(%w(a1 a2))
     end
   end
 end

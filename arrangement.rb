@@ -1,6 +1,15 @@
+# This class handles Arrangements of squares on a chess board
+class Arrangement
+  attr_reader :squares
+
+  def initialize(squares)
+    @squares = squares
+  end
+end
+
 # This class handles Rows of squares on a chess board
-class Row
-  attr_reader :rank, :squares, :line_w
+class Row < Arrangement
+  attr_reader :rank, :line_w
 
   def initialize(rank, squares, line_w)
     @rank = rank
@@ -33,5 +42,15 @@ class Row
     else
       index.even? ? "  " : "@@"
     end
+  end
+end
+
+# This class handles Columns of squares on a chess board
+class Column < Arrangement
+  attr_reader :file
+
+  def initialize(file, squares)
+    @file = file
+    @squares = squares
   end
 end
