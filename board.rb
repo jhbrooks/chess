@@ -11,7 +11,7 @@ class Board
     @squares = create_squares(players)
     @rows = create_rows
     @cols = create_columns
-    @diags = []
+    @diags = create_diagonals
   end
 
   def to_s
@@ -109,6 +109,31 @@ class Board
       file = ("a".ord + i).chr.to_sym
       target_squares = squares.select { |square| square.file == file }
       Column.new(file, target_squares)
+    end
+  end
+
+  def create_diagonals
+    diagonals = []
+    diagonals << create_up_diagonals
+    diagonals << create_down_diagonals
+    diagonals.flatten
+  end
+
+  def create_up_diagonals
+    Array.new(15).map.with_index do |_e, i|
+      target_squares = squares.select do |square|
+        (square.file.to_s.ord - "a".ord) + (8 - square.rank) == i
+      end
+      Arrangement.new(target_squares)
+    end
+  end
+
+  def create_down_diagonals
+    Array.new(15).map.with_index do |_e, i|
+      target_squares = squares.select do |square|
+        (square.file.to_s.ord - "a".ord) + square.rank == i + 1
+      end
+      Arrangement.new(target_squares)
     end
   end
 

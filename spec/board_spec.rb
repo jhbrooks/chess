@@ -49,8 +49,8 @@ describe Board do
   end
 
   describe "#diags" do
-    it "returns the correct collection of diagonals" do
-      expect(board.diags).to eq([])
+    it "returns a collection of diagonals with the correct length" do
+      expect(board.diags.length).to eq(30)
     end
   end
 
