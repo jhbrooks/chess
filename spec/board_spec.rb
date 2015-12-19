@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Board do
-  let(:board) { Board.new(10) }
+  let(:board) { Board.new(24) }
 
   describe "#new" do
     context "when given 1 argument (line_w)" do
@@ -25,25 +25,25 @@ describe Board do
 
   describe "#line_w" do
     it "returns the correct line width" do
-      expect(board.line_w).to eq(10)
+      expect(board.line_w).to eq(24)
     end
   end
 
   describe "#squares" do
-    it "returns the correct collection of squares" do
-      expect(board.squares).to eq([])
+    it "returns a collection of squares with the correct length" do
+      expect(board.squares.length).to eq(64)
     end
   end
 
   describe "#rows" do
-    it "returns the correct collection of rows" do
-      expect(board.rows).to eq(%w(2a2b 1a1b))
+    it "returns a collection of rows with the correct length" do
+      expect(board.rows.length).to eq(8)
     end
   end
 
   describe "#cols" do
     it "returns the correct collection of columns" do
-      expect(board.cols).to eq([1, 2])
+      expect(board.cols).to eq([1, 2, 3, 4, 5, 6, 7, 8])
     end
   end
 
@@ -55,9 +55,15 @@ describe Board do
 
   describe "#to_s" do
     it "returns a formatted string representing the Board" do
-      expect(board.to_s).to eq("    a b\n"\
-                               "2a2b\n"\
-                               "1a1b\n\n")
+      expect(board.to_s).to eq("     a b c d e f g h\n"\
+                               "  8 BRBNBBBQBKBBBNBR\n"\
+                               "  7 BPBPBPBPBPBPBPBP\n"\
+                               "  6   @@  @@  @@  @@\n"\
+                               "  5 @@  @@  @@  @@  \n"\
+                               "  4   @@  @@  @@  @@\n"\
+                               "  3 @@  @@  @@  @@  \n"\
+                               "  2 WPWPWPWPWPWPWPWP\n"\
+                               "  1 WRWNWBWQWKWBWNWR\n\n")
     end
   end
 end
