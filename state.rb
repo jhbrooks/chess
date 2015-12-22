@@ -1,13 +1,15 @@
+require_relative "./board.rb"
+
 # This class handles the State of a game of chess
 class State
   attr_reader :players, :board, :line_w
   attr_accessor :turn
 
-  def initialize(turn, players, board, line_w)
-    @turn = turn
+  def initialize(players, line_w)
     @players = players
-    @board = board
     @line_w = line_w
+    @turn = 1
+    @board = Board.new(players, line_w)
   end
 
   def current_player
@@ -22,6 +24,6 @@ class State
   private
 
   def status_string
-    "It is #{current_player}'s turn."
+    "#{current_player} to play."
   end
 end
