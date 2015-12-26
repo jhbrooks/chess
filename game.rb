@@ -2,8 +2,8 @@
 class Game
   attr_accessor :state
 
-  def initialize(state)
-    @state = state
+  def initialize
+    @state = nil
   end
 
   def play

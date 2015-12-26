@@ -1,42 +1,40 @@
 require "spec_helper"
 
 describe Game do
-  let(:game) { Game.new(:state) }
+  let(:game) { Game.new }
 
   describe "#new" do
-    context "when given 1 argument (state)" do
+    context "when given 0 arguments" do
       it "returns a Game object" do
         expect(game).to be_an_instance_of(Game)
       end
     end
 
-    context "when given fewer than 1 argument" do
+    context "when given more than 0 arguments" do
       it "raises an ArgumentError" do
-        expect { Game.new }.to raise_error(ArgumentError)
-      end
-    end
-
-    context "when given more than 1 argument" do
-      it "raises an ArgumentError" do
-        expect { Game.new(1, 2) }.to raise_error(ArgumentError)
+        expect { Game.new(1) }.to raise_error(ArgumentError)
       end
     end
   end
 
   describe "#state" do
-    it "returns the correct state" do
-      expect(game.state).to eq(:state)
+    it "returns nil after initialization" do
+      expect(game.state).to eq(nil)
     end
   end
 
   describe "#state=" do
     it "correctly sets a new state" do
-      game.state = :state2
-      expect(game.state).to eq(:state2)
+      game.state = :state
+      expect(game.state).to eq(:state)
     end
   end
 
   describe "#play" do
+    before(:each) do
+      game.state = :state
+    end
+
     it "checks to see if the Game is over" do
       allow(game).to receive(:game_over?).and_return(true)
       expect(game).to receive(:game_over?)
