@@ -55,6 +55,7 @@ describe Game do
     before(:each) do
       allow(STDOUT).to receive(:puts)
       allow(STDIN).to receive(:gets).and_return("start")
+      allow(game).to receive(:start_game)
     end
 
     it "gets a command" do
@@ -142,6 +143,31 @@ describe Game do
         expect(game).to receive(:quit_game)
         game.execute_command("QUIT")
       end
+    end
+  end
+
+  describe "#start_game" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+    end
+
+    it "gets names for White and Black" do
+      expect(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+    end
+
+    it "sets a new state" do
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      expect(game).to receive(:state=)
+      allow(game).to receive(:play)
+      game.start_game
+    end
+
+    it "starts play" do
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      expect(game).to receive(:play)
+      game.start_game
     end
   end
 

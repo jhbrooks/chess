@@ -1,3 +1,6 @@
+require_relative "./state.rb"
+require_relative "./player.rb"
+
 # This class operates a Game of chess
 class Game
   attr_accessor :state
@@ -55,11 +58,17 @@ class Game
     end
   end
 
-  # The following methods are not yet implemented
   def start_game
-    false
+    puts "Please input White's name."
+    w_name = STDIN.gets.chomp
+    puts "Please input Black's name."
+    b_name = STDIN.gets.chomp
+    players = [Player.new(w_name, :White), Player.new(b_name, :Black)]
+    self.state = State.new(players, 80)
+    play
   end
 
+  # The following methods are not yet implemented
   def load_game
     false
   end
