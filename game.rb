@@ -3,10 +3,11 @@ require_relative "./player.rb"
 
 # This class operates a Game of chess
 class Game
-  attr_accessor :state
+  attr_accessor :state, :quit_status
 
   def initialize
     @state = nil
+    @quit_status = nil
   end
 
   def set_up
@@ -74,6 +75,10 @@ class Game
     end
   end
 
+  def game_over?
+    quit_status
+  end
+
   def request_play_command
     cmd = nil
     until play_command_valid?(cmd)
@@ -97,11 +102,20 @@ class Game
     end
   end
 
-  # The following methods are not yet implemented
+  # Requires state to have the #current_player method
   def quit_game
-    false
+    puts "Are you sure? Please respond YES or NO."
+    confirmation = STDIN.gets.chomp.upcase
+    return unless confirmation == "YES"
+    self.quit_status = true
+    if state.nil?
+      puts "\nGoodbye!"
+    else
+      puts "\n#{state.current_player} has quit!"
+    end
   end
 
+  # The following methods are not yet implemented
   def save_game
     false
   end
@@ -116,10 +130,6 @@ class Game
   end
 
   def make_move(_move)
-    false
-  end
-
-  def game_over?
     false
   end
 
