@@ -30,6 +30,121 @@ describe Game do
     end
   end
 
+  describe "#set_up" do
+    it "welcomes the user" do
+      expect(game).to receive(:welcome_user)
+      allow(game).to receive(:request_command)
+      game.set_up
+    end
+
+    it "requests a command" do
+      allow(game).to receive(:welcome_user)
+      expect(game).to receive(:request_command)
+      game.set_up
+    end
+  end
+
+  describe "#welcome_user" do
+    it "outputs a welcome message" do
+      expect(STDOUT).to receive(:puts).with("\nWelcome to Ruby Chess!")
+      game.welcome_user
+    end
+  end
+
+  describe "#request_command" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets).and_return("start")
+    end
+
+    it "gets a command" do
+      expect(STDIN).to receive(:gets)
+      game.request_command
+    end
+
+    it "checks to see if the command is valid" do
+      expect(game).to receive(:command_valid?).and_return(false, true, true)
+      game.request_command
+    end
+
+    context "when the command is valid" do
+      it "executes it" do
+        expect(game).to receive(:execute_command)
+        game.request_command
+      end
+
+      it "does not try again" do
+        expect(STDIN).to receive(:gets).once
+        game.request_command
+      end
+    end
+
+    context "when the command is invalid" do
+      before(:each) do
+        allow(STDIN).to receive(:gets).and_return("invalid", "start")
+      end
+
+      it "does not execute it" do
+        expect(game).to receive(:execute_command).once
+        game.request_command
+      end
+
+      it "tries again" do
+        expect(STDIN).to receive(:gets).twice
+        game.request_command
+      end
+    end
+  end
+
+  describe "#command_valid?" do
+    context "when given 'START'" do
+      it "returns true" do
+        expect(game.command_valid?("START")).to be(true)
+      end
+    end
+
+    context "when given 'LOAD'" do
+      it "returns true" do
+        expect(game.command_valid?("LOAD")).to be(true)
+      end
+    end
+
+    context "when given 'QUIT'" do
+      it "returns true" do
+        expect(game.command_valid?("QUIT")).to be(true)
+      end
+    end
+
+    context "when given other commands" do
+      it "returns false" do
+        expect(game.command_valid?("INVALID")).to be(false)
+      end
+    end
+  end
+
+  describe "#execute_command" do
+    context "when given 'START'" do
+      it "calls #start_game" do
+        expect(game).to receive(:start_game)
+        game.execute_command("START")
+      end
+    end
+
+    context "when given 'LOAD'" do
+      it "calls #load_game" do
+        expect(game).to receive(:load_game)
+        game.execute_command("LOAD")
+      end
+    end
+
+    context "when given 'QUIT'" do
+      it "calls #quit_game" do
+        expect(game).to receive(:quit_game)
+        game.execute_command("QUIT")
+      end
+    end
+  end
+
   describe "#play" do
     before(:each) do
       game.state = :state
