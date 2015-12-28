@@ -11,28 +11,19 @@ class Game
 
   def set_up
     welcome_user
-    request_command
-  end
-
-  def play
-    until game_over?
-      puts state
-      move = determine_move
-      make_move(move)
-      game_over? ? puts(state) : advance_turn
-    end
+    request_setup_command
   end
 
   def welcome_user
     puts "\nWelcome to Ruby Chess!"
   end
 
-  def request_command
+  def request_setup_command
     cmd = nil
-    until command_valid?(cmd)
+    until setup_command_valid?(cmd)
       puts "You can START, LOAD, or QUIT. What would you like to do?"
       cmd = STDIN.gets.chomp.upcase
-      if command_valid?(cmd)
+      if setup_command_valid?(cmd)
         execute_command(cmd)
       else
         puts "Invalid command! Please try again.\n\n"
@@ -40,7 +31,7 @@ class Game
     end
   end
 
-  def command_valid?(cmd)
+  def setup_command_valid?(cmd)
     case cmd
     when "START" then true
     when "LOAD" then true
@@ -55,6 +46,8 @@ class Game
     when "START" then start_game
     when "LOAD" then load_game
     when "QUIT" then quit_game
+    when "MOVE" then determine_and_make_move
+    when "SAVE" then save_game
     end
   end
 
@@ -68,17 +61,54 @@ class Game
     play
   end
 
-  # The following methods are not yet implemented
+  # The following method is not yet implemented
   def load_game
     false
   end
 
+  def play
+    until game_over?
+      puts state
+      request_play_command
+      game_over? ? puts(state) : advance_turn
+    end
+  end
+
+  def request_play_command
+    cmd = nil
+    until play_command_valid?(cmd)
+      puts "You can MOVE, SAVE, or QUIT. What would you like to do?"
+      cmd = STDIN.gets.chomp.upcase
+      if play_command_valid?(cmd)
+        execute_command(cmd)
+      else
+        puts "Invalid command! Please try again.\n\n"
+      end
+    end
+  end
+
+  def play_command_valid?(cmd)
+    case cmd
+    when "MOVE" then true
+    when "SAVE" then true
+    when "QUIT" then true
+    else
+      false
+    end
+  end
+
+  # The following methods are not yet implemented
   def quit_game
     false
   end
 
-  def game_over?
+  def save_game
     false
+  end
+
+  def determine_and_make_move
+    move = determine_move
+    make_move(move)
   end
 
   def determine_move
@@ -86,6 +116,10 @@ class Game
   end
 
   def make_move(_move)
+    false
+  end
+
+  def game_over?
     false
   end
 
