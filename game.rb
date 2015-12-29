@@ -72,6 +72,8 @@ class Game
       puts state
       request_play_command
     end
+    reset_game
+    set_up
   end
 
   def game_over?
@@ -131,6 +133,11 @@ class Game
   # Requires state to have the #turn= method
   def advance_turn
     state.turn += 1
+  end
+
+  def reset_game
+    self.state = nil
+    self.quit_status = nil
   end
 
   # The following methods are not yet implemented

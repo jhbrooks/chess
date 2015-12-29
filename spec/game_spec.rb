@@ -311,7 +311,8 @@ describe Game do
 
   describe "#play" do
     before(:each) do
-      game.state = :state
+      allow(game).to receive(:reset_game)
+      allow(game).to receive(:set_up)
     end
 
     it "checks to see if the Game is over" do
@@ -322,16 +323,30 @@ describe Game do
 
     it "outputs the state" do
       allow(game).to receive(:game_over?).and_return(false, true)
-      expect(STDOUT).to receive(:puts).with(:state)
+      expect(STDOUT).to receive(:puts).with(nil)
       allow(game).to receive(:request_play_command)
       game.play
     end
 
     it "requests a play command" do
       allow(game).to receive(:game_over?).and_return(false, true)
-      allow(STDOUT).to receive(:puts).with(:state)
+      allow(STDOUT).to receive(:puts).with(nil)
       expect(game).to receive(:request_play_command)
       game.play
+    end
+
+    context "when the Game is over" do
+      it "resets the Game" do
+        allow(game).to receive(:game_over?).and_return(true)
+        expect(game).to receive(:reset_game)
+        game.play
+      end
+
+      it "returns to setup" do
+        allow(game).to receive(:game_over?).and_return(true)
+        expect(game).to receive(:set_up)
+        game.play
+      end
     end
   end
 
@@ -426,6 +441,20 @@ describe Game do
       it "returns false" do
         expect(game.play_command_valid?("INVALID")).to be(false)
       end
+    end
+  end
+
+  describe "#reset_game" do
+    it "sets the state to nil" do
+      game.state = :state
+      game.reset_game
+      expect(game.state).to be(nil)
+    end
+
+    it "sets the quit status to nil" do
+      game.quit_status = true
+      game.reset_game
+      expect(game.quit_status).to be(nil)
     end
   end
 end
