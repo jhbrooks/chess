@@ -240,6 +240,59 @@ describe Game do
     end
   end
 
+  describe "#make_move" do
+    context "when the move ends the Game" do
+      before(:each) do
+        allow(game).to receive(:game_over?).and_return(true)
+      end
+
+      it "outputs the state" do
+        expect(STDOUT).to receive(:puts).with(nil)
+        game.make_move(:move)
+      end
+
+      it "does not advance the turn" do
+        allow(STDOUT).to receive(:puts).with(nil)
+        expect(game).to_not receive(:advance_turn)
+        game.make_move(:move)
+      end
+    end
+
+    context "when the move does not end the Game" do
+      before(:each) do
+        allow(game).to receive(:game_over?).and_return(false)
+
+        allow(STDOUT).to receive(:puts)
+        allow(STDIN).to receive(:gets).and_return("p1", "p2")
+        allow(game).to receive(:play)
+        game.start_game
+      end
+
+      it "does not output the state" do
+        expect(STDOUT).to_not receive(:puts).with(nil)
+        game.make_move(:move)
+      end
+
+      it "advances the turn" do
+        allow(STDOUT).to receive(:puts)
+        expect(game).to receive(:advance_turn)
+        game.make_move(:move)
+      end
+    end
+  end
+
+  describe "#advance_turn" do
+    it "increases the Game's state's turn by 1" do
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+
+      game.advance_turn
+      expect(game.state.turn).to eq(2)
+    end
+  end
+
   describe "#play" do
     before(:each) do
       game.state = :state
@@ -252,55 +305,17 @@ describe Game do
     end
 
     it "outputs the state" do
-      allow(game).to receive(:game_over?).and_return(false, false, true)
+      allow(game).to receive(:game_over?).and_return(false, true)
       expect(STDOUT).to receive(:puts).with(:state)
       allow(game).to receive(:request_play_command)
       game.play
     end
 
     it "requests a play command" do
-      allow(game).to receive(:game_over?).and_return(false, false, true)
+      allow(game).to receive(:game_over?).and_return(false, true)
       allow(STDOUT).to receive(:puts).with(:state)
       expect(game).to receive(:request_play_command)
       game.play
-    end
-
-    context "when executing the command ends the Game" do
-      before(:each) do
-        allow(game).to receive(:game_over?).and_return(false, true, true)
-      end
-
-      it "outputs the state a second time" do
-        allow(game).to receive(:request_play_command)
-        expect(STDOUT).to receive(:puts).with(:state).twice
-        game.play
-      end
-
-      it "does not advance the turn" do
-        allow(STDOUT).to receive(:puts).with(:state)
-        allow(game).to receive(:request_play_command)
-        expect(game).to_not receive(:advance_turn)
-        game.play
-      end
-    end
-
-    context "when executing the command does not end the Game" do
-      before(:each) do
-        allow(game).to receive(:game_over?).and_return(false, false, true)
-      end
-
-      it "does not output the state a second time" do
-        expect(STDOUT).to receive(:puts).with(:state)
-        allow(game).to receive(:request_play_command)
-        game.play
-      end
-
-      it "advances the turn" do
-        allow(STDOUT).to receive(:puts).with(:state)
-        allow(game).to receive(:request_play_command)
-        expect(game).to receive(:advance_turn)
-        game.play
-      end
     end
   end
 

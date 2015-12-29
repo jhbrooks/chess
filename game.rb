@@ -71,7 +71,6 @@ class Game
     until game_over?
       puts state
       request_play_command
-      game_over? ? puts(state) : advance_turn
     end
   end
 
@@ -115,25 +114,26 @@ class Game
     end
   end
 
-  # The following methods are not yet implemented
-  def save_game
-    false
-  end
-
   def determine_and_make_move
     move = determine_move
     make_move(move)
   end
 
-  def determine_move
-    false
-  end
-
   def make_move(_move)
+    game_over? ? puts(state) : advance_turn
+  end
+
+  # Requires state to have the #turn= method
+  def advance_turn
+    state.turn += 1
+  end
+
+  # The following methods are not yet implemented
+  def save_game
     false
   end
 
-  def advance_turn
+  def determine_move
     false
   end
 end
