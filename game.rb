@@ -1,7 +1,7 @@
 require_relative "./state.rb"
 require_relative "./player.rb"
 
-# This class operates a Game of chess
+# This class operates Games of chess
 class Game
   attr_reader :setup_commands, :play_commands
   attr_accessor :state, :quit_status
@@ -102,8 +102,7 @@ class Game
   # Requires state to have the #current_player method
   def quit_play
     puts "Are you sure? Please respond YES or NO."
-    confirmation = STDIN.gets.chomp.upcase
-    return unless confirmation == "YES"
+    return unless STDIN.gets.chomp.upcase == "YES"
     self.quit_status = true
     puts "\n#{state.current_player} has quit!"
   end
