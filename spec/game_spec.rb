@@ -43,6 +43,22 @@ describe Game do
     end
   end
 
+  describe "#setup_commands" do
+    it "returns the correct collection of commands" do
+      expect(game.setup_commands).to eq("START" => :start_game,
+                                        "LOAD" => :load_game,
+                                        "QUIT" => :quit_game)
+    end
+  end
+
+  describe "#play_commands" do
+    it "returns the correct collection of commands" do
+      expect(game.play_commands).to eq("MOVE" => :determine_and_make_move,
+                                       "SAVE" => :save_game,
+                                       "QUIT" => :quit_game)
+    end
+  end
+
   describe "#set_up" do
     it "welcomes the user" do
       expect(game).to receive(:welcome_user)

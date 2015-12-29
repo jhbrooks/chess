@@ -3,11 +3,16 @@ require_relative "./player.rb"
 
 # This class operates a Game of chess
 class Game
+  attr_reader :setup_commands, :play_commands
   attr_accessor :state, :quit_status
 
   def initialize
     @state = nil
     @quit_status = nil
+    @setup_commands = { "START" => :start_game, "LOAD" => :load_game,
+                        "QUIT" => :quit_game }
+    @play_commands = { "MOVE" => :determine_and_make_move,
+                       "SAVE" => :save_game, "QUIT" => :quit_game }
   end
 
   def set_up
@@ -33,23 +38,11 @@ class Game
   end
 
   def setup_command_valid?(cmd)
-    case cmd
-    when "START" then true
-    when "LOAD" then true
-    when "QUIT" then true
-    else
-      false
-    end
+    setup_commands.keys.include?(cmd)
   end
 
   def execute_command(cmd)
-    case cmd
-    when "START" then start_game
-    when "LOAD" then load_game
-    when "QUIT" then quit_game
-    when "MOVE" then determine_and_make_move
-    when "SAVE" then save_game
-    end
+    send(setup_commands.merge(play_commands)[cmd])
   end
 
   def start_game
@@ -94,13 +87,7 @@ class Game
   end
 
   def play_command_valid?(cmd)
-    case cmd
-    when "MOVE" then true
-    when "SAVE" then true
-    when "QUIT" then true
-    else
-      false
-    end
+    play_commands.keys.include?(cmd)
   end
 
   # Requires state to have the #current_player method
