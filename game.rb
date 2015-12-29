@@ -103,15 +103,20 @@ class Game
 
   # Requires state to have the #current_player method
   def quit_game
+    state.nil? ? quit_setup : quit_play
+  end
+
+  def quit_setup
+    puts "\nGoodbye!"
+  end
+
+  # Requires state to have the #current_player method
+  def quit_play
     puts "Are you sure? Please respond YES or NO."
     confirmation = STDIN.gets.chomp.upcase
     return unless confirmation == "YES"
     self.quit_status = true
-    if state.nil?
-      puts "\nGoodbye!"
-    else
-      puts "\n#{state.current_player} has quit!"
-    end
+    puts "\n#{state.current_player} has quit!"
   end
 
   def determine_and_make_move

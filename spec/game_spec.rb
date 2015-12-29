@@ -200,42 +200,58 @@ describe Game do
   end
 
   describe "#quit_game" do
+    context "when called during setup (state is nil)" do
+      it "calls #quit_setup" do
+        expect(game).to receive(:quit_setup)
+        game.quit_game
+      end
+    end
+
+    context "when called during play (state is not nil)" do
+      it "calls #quit_play" do
+        allow(STDOUT).to receive(:puts)
+        allow(STDIN).to receive(:gets).and_return("p1", "p2")
+        allow(game).to receive(:play)
+        game.start_game
+
+        expect(game).to receive(:quit_play)
+        game.quit_game
+      end
+    end
+  end
+
+  describe "#quit_setup" do
+    it "outputs a goodbye message" do
+      expect(STDOUT).to receive(:puts).with("\nGoodbye!")
+      game.quit_setup
+    end
+  end
+
+  describe "#quit_play" do
     it "gets confirmation" do
       allow(STDOUT).to receive(:puts)
       expect(STDIN).to receive(:gets).and_return("no")
-      game.quit_game
+      game.quit_play
     end
 
     context "when confirmed" do
       before(:each) do
+        allow(STDOUT).to receive(:puts)
+        allow(STDIN).to receive(:gets).and_return("p1", "p2")
+        allow(game).to receive(:play)
+        game.start_game
+
         allow(STDIN).to receive(:gets).and_return("yes")
       end
 
       it "sets the quit status to true" do
-        allow(STDOUT).to receive(:puts)
-        game.quit_game
+        game.quit_play
         expect(game.quit_status).to be(true)
       end
 
-      context "when called during setup (state is nil)" do
-        it "outputs a goodbye message" do
-          allow(STDOUT).to receive(:puts)
-          expect(STDOUT).to receive(:puts).with("\nGoodbye!")
-          game.quit_game
-        end
-      end
-
-      context "when called after setup (state is not nil)" do
-        it "declares that the current player has quit" do
-          allow(STDOUT).to receive(:puts)
-          allow(STDIN).to receive(:gets).and_return("p1", "p2")
-          allow(game).to receive(:play)
-          game.start_game
-
-          allow(STDIN).to receive(:gets).and_return("yes")
-          expect(STDOUT).to receive(:puts).with("\nWhite (p1) has quit!")
-          game.quit_game
-        end
+      it "outputs that the current player has quit" do
+        expect(STDOUT).to receive(:puts).with("\nWhite (p1) has quit!")
+        game.quit_play
       end
     end
   end
@@ -320,17 +336,21 @@ describe Game do
   end
 
   describe "#game_over?" do
-    context "before #quit_game is called and confirmed" do
+    context "before #quit_play is called and confirmed" do
       it "returns nil" do
         expect(game.game_over?).to be(nil)
       end
     end
 
-    context "after #quit_game is called and confirmed" do
+    context "after #quit_play is called and confirmed" do
       it "returns true" do
         allow(STDOUT).to receive(:puts)
+        allow(STDIN).to receive(:gets).and_return("p1", "p2")
+        allow(game).to receive(:play)
+        game.start_game
+
         expect(STDIN).to receive(:gets).and_return("yes")
-        game.quit_game
+        game.quit_play
         expect(game.game_over?).to be(true)
       end
     end
