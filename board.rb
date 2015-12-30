@@ -140,11 +140,15 @@ class Board
       squares.map(&:file).include?(m[0]) && squares.map(&:rank).include?(m[1])
     end
 
+    delete_invalid_moves(onboard_moves, origin)
+
+    onboard_moves
+  end
+
+  def delete_invalid_moves(onboard_moves, origin)
     delete_row_blocked_moves(onboard_moves, origin)
     delete_col_blocked_moves(onboard_moves, origin)
     delete_diag_blocked_moves(onboard_moves, origin)
-
-    onboard_moves
   end
 
   def delete_row_blocked_moves(onboard_moves, origin)
@@ -189,11 +193,20 @@ class Board
       squares.map(&:file).include?(c[0]) && squares.map(&:rank).include?(c[1])
     end
 
+    delete_invalid_captures(onboard_captures, origin)
+
+    onboard_captures
+  end
+
+  def delete_invalid_captures(onboard_captures, origin)
+    delete_empties(onboard_captures)
     delete_row_blocked_captures(onboard_captures, origin)
     delete_col_blocked_captures(onboard_captures, origin)
     delete_diag_blocked_captures(onboard_captures, origin)
+  end
 
-    onboard_captures
+  def delete_empties(onboard_captures)
+    onboard_captures.delete_if { |pos| square(pos).empty? }
   end
 
   def delete_row_blocked_captures(onboard_captures, origin)

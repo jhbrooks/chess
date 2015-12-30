@@ -225,6 +225,23 @@ describe Board do
       it "no moves past pieces in the same diagonal are included" do
         expect(board.legal_moves([:d, 1]).include?([:f, 3])).to be(false)
       end
+
+      context "when the given origin position's square contains a pawn" do
+        context "with captures available" do
+          it "the captures are included" do
+            board.make_move([:c, 7], [:c, 5])
+            board.make_move([:c, 5], [:c, 4])
+            board.make_move([:c, 4], [:c, 3])
+            expect(board.legal_moves([:b, 2]).include?([:c, 3])).to be(true)
+          end
+        end
+
+        context "with no captures available" do
+          it "the potential captures are not included" do
+            expect(board.legal_moves([:b, 2]).include?([:c, 3])).to be(false)
+          end
+        end
+      end
     end
   end
 
