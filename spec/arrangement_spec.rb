@@ -4,6 +4,21 @@ describe Arrangement do
   let(:arrangement) do
     Arrangement.new(%w(a1 b2))
   end
+  let(:p1) { Player.new(:p1, :White) }
+  let(:p2) { Player.new(:p2, :Black) }
+  let(:w_piece) { Queen.create(p1) }
+  let(:b_piece) { Queen.create(p2) }
+  let(:true_arrangement) do
+    Arrangement.new([Square.new(:a, 1, nil),
+                     Square.new(:b, 1, b_piece),
+                     Square.new(:c, 1, w_piece),
+                     Square.new(:d, 1, nil),
+                     Square.new(:e, 1, w_piece),
+                     Square.new(:f, 1, b_piece),
+                     Square.new(:g, 1, b_piece)])
+  end
+  let(:ta) { true_arrangement.squares }
+  let(:origin) { ta[4] }
 
   describe "#new" do
     context "when given 1 argument (squares)" do
@@ -28,6 +43,55 @@ describe Arrangement do
   describe "#squares" do
     it "returns the correct collection of squares" do
       expect(arrangement.squares).to eq(%w(a1 b2))
+    end
+  end
+
+  describe "#blocked_moves" do
+    context "when given an origin square not within the Arrangement" do
+      it "returns an empty array" do
+        expect(true_arrangement.blocked_moves(:fake_origin)).to eq([])
+      end
+    end
+
+    context "when given an origin square within the Arrangement" do
+      it "returns an array of squares not accessible to the origin square" do
+        expect(true_arrangement.blocked_moves(origin))
+          .to eq([ta[0], ta[1], ta[2], ta[6], ta[5]])
+      end
+
+      it "includes the blocking squares" do
+        expect(true_arrangement.blocked_moves(origin).include?(ta[5]))
+          .to be(true)
+      end
+    end
+  end
+
+  describe "#blocked_captures" do
+    context "when given an origin square not within the Arrangement" do
+      it "returns an empty array" do
+        expect(true_arrangement.blocked_captures(:fake_origin)).to eq([])
+      end
+    end
+
+    context "when given an origin square within the Arrangement" do
+      it "returns an array of squares not accessible to the origin square" do
+        expect(true_arrangement.blocked_captures(origin))
+          .to eq([ta[0], ta[1], ta[2], ta[6]])
+      end
+
+      context "with a blocking square with a friendly piece" do
+        it "includes the blocking square" do
+          expect(true_arrangement.blocked_captures(origin).include?(ta[2]))
+            .to be(true)
+        end
+      end
+
+      context "with a blocking square with an enemy piece" do
+        it "does not include the blocking square" do
+          expect(true_arrangement.blocked_captures(origin).include?(ta[5]))
+            .to be(false)
+        end
+      end
     end
   end
 end
