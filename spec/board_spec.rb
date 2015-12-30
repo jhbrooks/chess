@@ -188,6 +188,12 @@ describe Board do
         expect(board.square([:a, 0])).to be_falsey
       end
     end
+
+    context "when the given position is not a well-formatted array" do
+      it "returns false" do
+        expect(board.square([])).to be(false)
+      end
+    end
   end
 
   describe "#legal_moves" do

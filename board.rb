@@ -23,6 +23,7 @@ class Board
   end
 
   def square(position)
+    return false unless position.length == 2
     squares.find do |square|
       square.file == position[0] && square.rank == position[1]
     end
