@@ -172,6 +172,24 @@ describe Board do
     end
   end
 
+  describe "#square" do
+    context "when the given position matches an onboard square" do
+      it "returns a truthy value" do
+        expect(board.square([:a, 1])).to be_truthy
+      end
+
+      it "returns a Square object" do
+        expect(board.square([:a, 1])).to be_an_instance_of(Square)
+      end
+    end
+
+    context "when the given position matches an off-board square" do
+      it "returns a falsey value" do
+        expect(board.square([:a, 0])).to be_falsey
+      end
+    end
+  end
+
   describe "#legal_moves" do
     context "returns a collection of moves (and captures) such that" do
       it "no off-board moves are included" do

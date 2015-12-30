@@ -22,6 +22,12 @@ class Board
     true
   end
 
+  def square(position)
+    squares.find do |square|
+      square.file == position[0] && square.rank == position[1]
+    end
+  end
+
   def legal_moves(position)
     winnowed_moves(position) + winnowed_captures(position)
   end
@@ -139,12 +145,6 @@ class Board
     delete_diag_blocked_moves(onboard_moves, origin)
 
     onboard_moves
-  end
-
-  def square(position)
-    squares.find do |square|
-      square.file == position[0] && square.rank == position[1]
-    end
   end
 
   def delete_row_blocked_moves(onboard_moves, origin)
