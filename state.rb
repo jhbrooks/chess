@@ -16,6 +16,15 @@ class State
     players[(turn - 1) % players.length]
   end
 
+  def valid_origin(position)
+    origin = board.square(position)
+    origin && !origin.empty? && origin.piece.player == current_player
+  end
+
+  def make_move(orig_pos, targ_pos)
+    board.make_move(orig_pos, targ_pos)
+  end
+
   def to_s
     f_string = "\n#{status_string.center(line_w)}\n\n"
     f_string << "#{board}"
