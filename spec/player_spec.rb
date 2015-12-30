@@ -35,6 +35,19 @@ describe Player do
     end
   end
 
+  describe "#in_check" do
+    it "returns false after initialization" do
+      expect(player.in_check).to be(false)
+    end
+  end
+
+  describe "#in_check=" do
+    it "correctly sets the in_check attribute" do
+      player.in_check = true
+      expect(player.in_check).to be(true)
+    end
+  end
+
   describe "#mark" do
     it "returns the first character of the Player's color" do
       expect(player.mark).to eq("W")

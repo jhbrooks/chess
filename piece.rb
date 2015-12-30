@@ -59,13 +59,12 @@ class King < Piece
     new(player, :king)
   end
 
-  attr_accessor :unmoved, :in_check
+  attr_accessor :unmoved
 
   def initialize(player, type)
     @player = player
     @type = type
     @unmoved = true
-    @in_check = false
   end
 
   def move_pattern

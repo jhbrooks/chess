@@ -151,19 +151,6 @@ describe King do
     end
   end
 
-  describe "#in_check" do
-    it "returns false after initialization" do
-      expect(king.in_check).to be(false)
-    end
-  end
-
-  describe "#in_check=" do
-    it "correctly sets the in_check attribute" do
-      king.in_check = true
-      expect(king.in_check).to be(true)
-    end
-  end
-
   describe "#move_pattern" do
     it "returns single position adjustments in all directions" do
       expect(king.move_pattern).to eq(king_pattern)
