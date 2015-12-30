@@ -272,43 +272,168 @@ describe Game do
     end
   end
 
-  describe "#make_move" do
-    context "when the move ends the Game" do
+  describe "#determine_and_make_move" do
+    it "calls #determine_origin" do
+      expect(game).to receive(:determine_origin)
+      allow(game).to receive(:make_move)
+      game.determine_and_make_move
+    end
+
+    it "calls #make_move" do
+      allow(game).to receive(:determine_origin)
+      expect(game).to receive(:make_move)
+      game.determine_and_make_move
+    end
+  end
+
+  describe "#determine_origin" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+    end
+
+    it "gets an origin" do
+      allow(game.state).to receive(:valid_origin?).and_return(false, true)
+      expect(STDIN).to receive(:gets)
+      game.determine_origin
+    end
+
+    it "checks to see if the origin is valid" do
+      expect(game.state).to receive(:valid_origin?).and_return(true)
+      game.determine_origin
+    end
+
+    context "when the origin is valid" do
       before(:each) do
-        allow(game).to receive(:game_over?).and_return(true)
+        allow(game.state).to receive(:valid_origin?).and_return(false, true)
+        allow(STDIN).to receive(:gets).and_return("a1")
       end
 
-      it "outputs the state" do
-        expect(STDOUT).to receive(:puts).with(nil)
-        game.make_move(:move)
+      it "does not try again" do
+        expect(STDIN).to receive(:gets).once
+        game.determine_origin
       end
 
-      it "does not advance the turn" do
-        allow(STDOUT).to receive(:puts).with(nil)
-        expect(game).to_not receive(:advance_turn)
-        game.make_move(:move)
+      it "returns the origin" do
+        expect(game.determine_origin).to eq([:a, 1])
       end
     end
 
-    context "when the move does not end the Game" do
-      before(:each) do
-        allow(game).to receive(:game_over?).and_return(false)
+    context "when the origin is invalid" do
+      it "tries again" do
+        allow(game.state).to receive(:valid_origin?)
+          .and_return(false, false, true)
+        allow(STDIN).to receive(:gets).and_return("a0", "a1")
 
-        allow(STDOUT).to receive(:puts)
-        allow(STDIN).to receive(:gets).and_return("p1", "p2")
-        allow(game).to receive(:play)
-        game.start_game
+        expect(STDIN).to receive(:gets).twice
+        game.determine_origin
+      end
+    end
+  end
+
+  describe "#make_move" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+    end
+
+    it "gets a target" do
+      allow(game.state).to receive(:make_move).and_return(false, true)
+      expect(STDIN).to receive(:gets)
+      game.make_move([:a, 2])
+    end
+
+    it "checks to see if the target is valid by making a move" do
+      expect(game.state).to receive(:make_move).and_return(true)
+      game.make_move([:a, 2])
+    end
+
+    context "when the target is valid" do
+      before(:each) do
+        allow(game.state).to receive(:make_move).and_return(false, true)
+        allow(STDIN).to receive(:gets).and_return("a3")
+      end
+
+      it "does not try again" do
+        expect(STDIN).to receive(:gets).once
+        game.make_move([:a, 2])
+      end
+
+      it "returns the target" do
+        expect(game.make_move([:a, 2])).to eq([:a, 3])
+      end
+
+      context "when the move ends the Game" do
+        before(:each) do
+          allow(game).to receive(:game_over?).and_return(true)
+        end
+
+        it "outputs the state" do
+          expect(STDOUT).to receive(:puts).with(game.state)
+          game.make_move([:a, 2])
+        end
+
+        it "does not advance the turn" do
+          expect(game).to_not receive(:advance_turn)
+          game.make_move([:a, 2])
+        end
+      end
+
+      context "when the move does not end the Game" do
+        before(:each) do
+          allow(game).to receive(:game_over?).and_return(false)
+        end
+
+        it "does not output the state" do
+          expect(STDOUT).to_not receive(:puts).with(game.state)
+          game.make_move([:a, 2])
+        end
+
+        it "advances the turn" do
+          expect(game).to receive(:advance_turn)
+          game.make_move([:a, 2])
+        end
+      end
+    end
+
+    context "when the target is invalid" do
+      it "tries again" do
+        allow(game.state).to receive(:make_move)
+          .and_return(false, false, true)
+        allow(STDIN).to receive(:gets).and_return("a0", "a3")
+
+        expect(STDIN).to receive(:gets).twice
+        game.make_move([:a, 2])
+      end
+    end
+
+    context "when the target is the command 'DROP'" do
+      before(:each) do
+        allow(game.state).to receive(:make_move).and_return(false, true)
+        allow(STDIN).to receive(:gets).and_return("drop")
+      end
+
+      it "does not try again" do
+        expect(STDIN).to receive(:gets).once
+        game.make_move([:a, 2])
+      end
+
+      it "returns false" do
+        expect(game.make_move([:a, 2])).to be(false)
       end
 
       it "does not output the state" do
-        expect(STDOUT).to_not receive(:puts).with(nil)
-        game.make_move(:move)
+        expect(STDOUT).to_not receive(:puts).with(game.state)
+        game.make_move([:a, 2])
       end
 
-      it "advances the turn" do
-        allow(STDOUT).to receive(:puts)
-        expect(game).to receive(:advance_turn)
-        game.make_move(:move)
+      it "does not advance the turn" do
+        expect(game).to_not receive(:advance_turn)
+        game.make_move([:a, 2])
       end
     end
   end

@@ -107,13 +107,39 @@ class Game
     puts "\n#{state.current_player} has quit!"
   end
 
+  # Requires state to have the #valid_origin? method.
+  # Requires state to have the #make_move method.
   def determine_and_make_move
-    move = determine_move
-    make_move(move)
+    make_move(determine_origin)
   end
 
-  def make_move(_move)
+  # Requires state to have the #valid_origin? method
+  def determine_origin
+    origin = [nil, nil]
+    until state.valid_origin?(origin)
+      puts "Invalid square! Please try again.\n\n" unless origin == [nil, nil]
+      puts "Input the square (e.g. a1) with the piece you'd like to move."
+      origin = STDIN.gets.chomp.downcase.split("")
+      origin = [origin[0].to_sym, origin[1].to_i] if origin.length == 2
+    end
+    origin
+  end
+
+  # Requires state to have the #make_move method
+  def make_move(origin)
+    target = [nil, nil]
+    until target.join("").upcase == "DROP" || state.make_move(origin, target)
+      puts "Invalid square! Please try again.\n\n" unless target == [nil, nil]
+      puts "Input the square where you'd like to move that piece (or DROP it)."
+      target = STDIN.gets.chomp.downcase.split("")
+      target = [target[0].to_sym, target[1].to_i] if target.length == 2
+    end
+
+    return false if target.join("").upcase == "DROP"
+
     game_over? ? puts(state) : advance_turn
+
+    target
   end
 
   # Requires state to have the #turn= method
@@ -128,10 +154,6 @@ class Game
 
   # The following methods are not yet implemented
   def save_game
-    false
-  end
-
-  def determine_move
     false
   end
 end
