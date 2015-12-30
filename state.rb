@@ -21,8 +21,16 @@ class State
     origin && !origin.empty? && origin.piece.player == current_player
   end
 
+  # Requires all players to have the #in_check= method
   def make_move(orig_pos, targ_pos)
     board.make_move(orig_pos, targ_pos)
+    players.each do |p|
+      non_empties = board.squares.reject(&:empty?)
+      enemy_squares = non_empties.select { |s| s.piece.player != p }
+      k = non_empties.find { |s| s.piece.player == p && s.piece.is_a?(King) }
+      e_moves = enemy_squares.map { |e| board.legal_moves([e.file, e.rank]) }
+      p.in_check = e_moves.any? { |mvs| mvs.include?([k.file, k.rank]) }
+    end
   end
 
   def to_s

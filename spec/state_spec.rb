@@ -97,6 +97,45 @@ describe State do
     end
   end
 
+  describe "#make_move" do
+    before(:each) do
+      true_state.make_move([:e, 2], [:e, 4])
+      true_state.make_move([:e, 4], [:e, 5])
+      true_state.make_move([:e, 5], [:e, 6])
+      true_state.make_move([:e, 6], [:d, 7])
+    end
+
+    context "when the move puts the current player in check" do
+      it "sets that player's @in_check attribute to true" do
+        true_state.make_move([:d, 8], [:d, 7])
+        true_state.make_move([:d, 7], [:d, 2])
+        expect(true_state.players[0].in_check).to be(true)
+      end
+    end
+
+    context "when the move takes the current player out of check" do
+      it "sets that player's @in_check attribute to false" do
+        true_state.make_move([:d, 8], [:d, 7])
+        true_state.make_move([:d, 7], [:d, 2])
+        true_state.make_move([:d, 2], [:c, 1])
+        expect(true_state.players[0].in_check).to be(false)
+      end
+    end
+
+    context "when the move puts the other player in check" do
+      it "sets that player's @in_check attribute to true" do
+        expect(true_state.players[1].in_check).to be(true)
+      end
+    end
+
+    context "when the move takes the other player out of check" do
+      it "sets that player's @in_check attribute to false" do
+        true_state.make_move([:d, 7], [:c, 8])
+        expect(true_state.players[1].in_check).to be(false)
+      end
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the State" do
       expect(true_state.to_s).to eq("\n  White (p1) to play.   \n\n"\
