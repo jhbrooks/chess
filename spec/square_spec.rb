@@ -3,7 +3,7 @@ require "spec_helper"
 describe Square do
   let(:square) { Square.new(:a, 1, :piece) }
   let(:player) { Player.new(:p1, :White) }
-  let(:piece) { Piece.new(player, :pawn) }
+  let(:piece) { Pawn.create(player) }
   let(:true_square) { Square.new(:a, 1, piece) }
   let(:empty_square) { Square.new(:a, 1, nil) }
 
@@ -56,6 +56,18 @@ describe Square do
       it "returns true" do
         expect(empty_square.empty?).to be(true)
       end
+    end
+  end
+
+  describe "#potential_moves" do
+    it "returns move positions based on the Square and its piece" do
+      expect(true_square.potential_moves).to eq([[:a, 2], [:a, 3]])
+    end
+  end
+
+  describe "#potential_captures" do
+    it "returns capture positions based on the Square and its piece" do
+      expect(true_square.potential_captures).to eq([[:b, 2], [:`, 2]])
     end
   end
 
