@@ -16,7 +16,7 @@ class State
     players[(turn - 1) % players.length]
   end
 
-  def valid_origin(position)
+  def valid_origin?(position)
     origin = board.square(position)
     origin && !origin.empty? && origin.piece.player == current_player
   end

@@ -71,28 +71,28 @@ describe State do
     end
   end
 
-  describe "#valid_origin" do
+  describe "#valid_origin?" do
     context "when the given position is off-board" do
       it "returns a falsey value" do
-        expect(state.valid_origin([:a, 0])).to be_falsey
+        expect(state.valid_origin?([:a, 0])).to be_falsey
       end
     end
 
     context "when the given position matches an empty square" do
       it "returns a falsey value" do
-        expect(state.valid_origin([:a, 3])).to be_falsey
+        expect(state.valid_origin?([:a, 3])).to be_falsey
       end
     end
 
     context "when the given position matches a square with an enemy piece" do
       it "returns a falsey value" do
-        expect(state.valid_origin([:a, 8])).to be_falsey
+        expect(state.valid_origin?([:a, 8])).to be_falsey
       end
     end
 
     context "when the given position is a valid move origin" do
       it "returns true" do
-        expect(state.valid_origin([:a, 1])).to be(true)
+        expect(state.valid_origin?([:a, 1])).to be(true)
       end
     end
   end
