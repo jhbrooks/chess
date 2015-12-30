@@ -14,6 +14,10 @@ class Board
     @diags = create_diagonals
   end
 
+  def legal_moves(position)
+    winnowed_moves(position) + winnowed_captures(position)
+  end
+
   def to_s
     adjustment = (line_w / 2) + (label_string.length / 2)
     f_string = "#{label_string.rjust(adjustment)}\n"
@@ -114,6 +118,110 @@ class Board
         (square.file.to_s.ord - "a".ord) + square.rank == i + 1
       end)
     end
+  end
+
+  def winnowed_moves(position)
+    origin = square(position)
+    onboard_moves = origin.potential_moves.select do |m|
+      squares.map(&:file).include?(m[0]) && squares.map(&:rank).include?(m[1])
+    end
+
+    delete_row_blocked_moves(onboard_moves, origin)
+    delete_col_blocked_moves(onboard_moves, origin)
+    delete_diag_blocked_moves(onboard_moves, origin)
+
+    onboard_moves
+  end
+
+  def square(position)
+    squares.find do |square|
+      square.file == position[0] && square.rank == position[1]
+    end
+  end
+
+  def delete_row_blocked_moves(onboard_moves, origin)
+    rows.each do |row|
+      onboard_moves.delete_if do |pos|
+        row_blocked_moves(row, origin).include?(pos)
+      end
+    end
+  end
+
+  def row_blocked_moves(row, origin)
+    row.blocked_moves(origin).map { |square| [square.file, square.rank] }
+  end
+
+  def delete_col_blocked_moves(onboard_moves, origin)
+    cols.each do |col|
+      onboard_moves.delete_if do |pos|
+        col_blocked_moves(col, origin).include?(pos)
+      end
+    end
+  end
+
+  def col_blocked_moves(col, origin)
+    col.blocked_moves(origin).map { |square| [square.file, square.rank] }
+  end
+
+  def delete_diag_blocked_moves(onboard_moves, origin)
+    diags.each do |d|
+      onboard_moves.delete_if do |pos|
+        diag_blocked_moves(d, origin).include?(pos)
+      end
+    end
+  end
+
+  def diag_blocked_moves(diag, origin)
+    diag.blocked_moves(origin).map { |square| [square.file, square.rank] }
+  end
+
+  def winnowed_captures(position)
+    origin = square(position)
+    onboard_captures = origin.potential_captures.select do |c|
+      squares.map(&:file).include?(c[0]) && squares.map(&:rank).include?(c[1])
+    end
+
+    delete_row_blocked_captures(onboard_captures, origin)
+    delete_col_blocked_captures(onboard_captures, origin)
+    delete_diag_blocked_captures(onboard_captures, origin)
+
+    onboard_captures
+  end
+
+  def delete_row_blocked_captures(onboard_captures, origin)
+    rows.each do |row|
+      onboard_captures.delete_if do |pos|
+        row_blocked_captures(row, origin).include?(pos)
+      end
+    end
+  end
+
+  def row_blocked_captures(row, origin)
+    row.blocked_captures(origin).map { |square| [square.file, square.rank] }
+  end
+
+  def delete_col_blocked_captures(onboard_captures, origin)
+    cols.each do |col|
+      onboard_captures.delete_if do |pos|
+        col_blocked_captures(col, origin).include?(pos)
+      end
+    end
+  end
+
+  def col_blocked_captures(col, origin)
+    col.blocked_captures(origin).map { |square| [square.file, square.rank] }
+  end
+
+  def delete_diag_blocked_captures(onboard_captures, origin)
+    diags.each do |d|
+      onboard_captures.delete_if do |pos|
+        diag_blocked_captures(d, origin).include?(pos)
+      end
+    end
+  end
+
+  def diag_blocked_captures(diag, origin)
+    diag.blocked_captures(origin).map { |square| [square.file, square.rank] }
   end
 
   def label_string

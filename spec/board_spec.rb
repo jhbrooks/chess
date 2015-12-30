@@ -138,6 +138,36 @@ describe Board do
     end
   end
 
+  describe "#legal_moves" do
+    context "returns a collection of moves (and captures) such that" do
+      it "no off-board moves are included" do
+        expect(board.legal_moves([:d, 1]).include?([:d, 0])).to be(false)
+      end
+
+      it "no captures of friendly pieces are included" do
+        expect(board.legal_moves([:d, 1]).include?([:e, 1])).to be(false)
+      end
+
+      it "captures of enemy pieces (if available) are included" do
+        pending("requires #move to set up example")
+        fail
+      end
+
+      it "no moves past pieces in the same row are included" do
+        pending("requires #move to set up example")
+        fail
+      end
+
+      it "no moves past pieces in the same column are included" do
+        expect(board.legal_moves([:d, 1]).include?([:d, 3])).to be(false)
+      end
+
+      it "no moves past pieces in the same diagonal are included" do
+        expect(board.legal_moves([:d, 1]).include?([:f, 3])).to be(false)
+      end
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Board" do
       expect(board.to_s).to eq("     a b c d e f g h\n"\
