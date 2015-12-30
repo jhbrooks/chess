@@ -57,7 +57,7 @@ class Arrangement
   # Requires all squares to have the #empty? method.
   # Requires some non-empty squares and origin to have a piece with a player.
   def blocked_squares_minus_captures(blocked_squares, origin)
-    return if blocked_squares.empty?
+    return [] if blocked_squares.empty?
     unless blocked_squares[-1].piece.player == origin.piece.player
       blocked_squares = blocked_squares[0..-2]
     end
