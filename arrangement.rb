@@ -17,11 +17,8 @@ class Arrangement
   def blocked_captures(origin)
     return [] unless squares.include?(origin)
 
-    blocked_squares = before_blocked_squares(origin)
-    blocked_squares = blocked_squares_minus_captures(blocked_squares, origin)
-
-    blocked_squares += after_blocked_squares(origin)
-    blocked_squares_minus_captures(blocked_squares, origin)
+    blocked_squares_minus_captures(before_blocked_squares(origin), origin)
+      .+(blocked_squares_minus_captures(after_blocked_squares(origin), origin))
   end
 
   private

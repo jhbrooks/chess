@@ -19,6 +19,7 @@ describe Arrangement do
   end
   let(:ta) { true_arrangement.squares }
   let(:origin) { ta[4] }
+  let(:edge_origin) { ta[6] }
 
   describe "#new" do
     context "when given 1 argument (squares)" do
@@ -91,6 +92,13 @@ describe Arrangement do
           expect(true_arrangement.blocked_captures(origin).include?(ta[5]))
             .to be(false)
         end
+      end
+    end
+
+    context "when given an origin square on one edge of the Arrangement" do
+      it "returns an array of squares not accessible to the origin square" do
+        expect(true_arrangement.blocked_captures(edge_origin))
+          .to eq([ta[0], ta[1], ta[2], ta[3], ta[4], ta[5]])
       end
     end
   end
