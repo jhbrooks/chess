@@ -53,6 +53,12 @@ end
 describe Bishop do
   let(:player) { Player.new(:p1, :White) }
   let(:bishop) { Bishop.create(player) }
+  let(:bishop_pattern) do
+    [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+     [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+     [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
+     [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7]]
+  end
 
   describe ".create" do
     context "when given 1 argument (player)" do
@@ -80,6 +86,18 @@ describe Bishop do
     end
   end
 
+  describe "#move_pattern" do
+    it "returns a full range of diagonal position adjustments" do
+      expect(bishop.move_pattern).to eq(bishop_pattern)
+    end
+  end
+
+  describe "#capture_pattern" do
+    it "returns a full range of diagonal position adjustments" do
+      expect(bishop.capture_pattern).to eq(bishop_pattern)
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Bishop" do
       expect(bishop.to_s).to eq("White (p1) bishop")
@@ -90,6 +108,9 @@ end
 describe King do
   let(:player) { Player.new(:p1, :White) }
   let(:king) { King.create(player) }
+  let(:king_pattern) do
+    [[1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]]
+  end
 
   describe ".create" do
     context "when given 1 argument (player)" do
@@ -143,6 +164,18 @@ describe King do
     end
   end
 
+  describe "#move_pattern" do
+    it "returns single position adjustments in all directions" do
+      expect(king.move_pattern).to eq(king_pattern)
+    end
+  end
+
+  describe "#capture_pattern" do
+    it "returns single position adjustments in all directions" do
+      expect(king.capture_pattern).to eq(king_pattern)
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the King" do
       expect(king.to_s).to eq("White (p1) king")
@@ -153,6 +186,9 @@ end
 describe Knight do
   let(:player) { Player.new(:p1, :White) }
   let(:knight) { Knight.create(player) }
+  let(:knight_pattern) do
+    [[1, 2], [1, -2], [-1, -2], [-1, 2], [2, 1], [2, -1], [-2, -1], [-2, 1]]
+  end
 
   describe ".create" do
     context "when given 1 argument (player)" do
@@ -177,6 +213,18 @@ describe Knight do
   describe "#mark" do
     it "returns a mark representing the Knight" do
       expect(knight.mark).to eq("WN")
+    end
+  end
+
+  describe "#move_pattern" do
+    it "returns L-shaped adjustments (of both kinds) in all directions" do
+      expect(knight.move_pattern).to eq(knight_pattern)
+    end
+  end
+
+  describe "#capture_pattern" do
+    it "returns L-shaped adjustments (of both kinds) in all directions" do
+      expect(knight.capture_pattern).to eq(knight_pattern)
     end
   end
 
@@ -230,6 +278,58 @@ describe Pawn do
     end
   end
 
+  describe "#move_pattern" do
+    context "with a White Pawn" do
+      context "which has not moved" do
+        it "returns single and double upward position adjustments" do
+          expect(pawn.move_pattern).to eq([[0, 1], [0, 2]])
+        end
+      end
+
+      context "which has moved" do
+        it "returns single upward position adjustments" do
+          pawn.unmoved = false
+          expect(pawn.move_pattern).to eq([[0, 1]])
+        end
+      end
+    end
+
+    context "with a Black Pawn" do
+      let(:player) { Player.new(:p1, :Black) }
+      let(:pawn) { Pawn.create(player) }
+
+      context "which has not moved" do
+        it "returns single and double downward position adjustments" do
+          expect(pawn.move_pattern).to eq([[0, -1], [0, -2]])
+        end
+      end
+
+      context "which has moved" do
+        it "returns single downward position adjustments" do
+          pawn.unmoved = false
+          expect(pawn.move_pattern).to eq([[0, -1]])
+        end
+      end
+    end
+  end
+
+  describe "#capture_pattern" do
+    context "with a White Pawn" do
+      it "returns single upward adjustments to the right and left" do
+        expect(pawn.capture_pattern).to eq([[1, 1], [-1, 1]])
+      end
+    end
+
+    context "with a Black Pawn" do
+      let(:player) { Player.new(:p1, :Black) }
+      let(:pawn) { Pawn.create(player) }
+
+      it "returns single downward adjustments to the right and left" do
+        expect(pawn.capture_pattern).to eq([[1, -1], [-1, -1]])
+      end
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Pawn" do
       expect(pawn.to_s).to eq("White (p1) pawn")
@@ -240,6 +340,17 @@ end
 describe Queen do
   let(:player) { Player.new(:p1, :White) }
   let(:queen) { Queen.create(player) }
+  let(:queen_pattern) do
+    bp = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+          [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+          [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
+          [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7]]
+    rp = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+          [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+          [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0],
+          [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]
+    bp + rp
+  end
 
   describe ".create" do
     context "when given 1 argument (player)" do
@@ -267,6 +378,18 @@ describe Queen do
     end
   end
 
+  describe "#move_pattern" do
+    it "returns a full range of position adjustments in all directions" do
+      expect(queen.move_pattern).to eq(queen_pattern)
+    end
+  end
+
+  describe "#capture_pattern" do
+    it "returns a full range of position adjustments in all directions" do
+      expect(queen.capture_pattern).to eq(queen_pattern)
+    end
+  end
+
   describe "#to_s" do
     it "returns a formatted string representing the Queen" do
       expect(queen.to_s).to eq("White (p1) queen")
@@ -277,6 +400,12 @@ end
 describe Rook do
   let(:player) { Player.new(:p1, :White) }
   let(:rook) { Rook.create(player) }
+  let(:rook_pattern) do
+    [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+     [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+     [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0],
+     [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]
+  end
 
   describe ".create" do
     context "when given 1 argument (player)" do
@@ -314,6 +443,18 @@ describe Rook do
     it "correctly sets the unmoved attribute" do
       rook.unmoved = false
       expect(rook.unmoved).to be(false)
+    end
+  end
+
+  describe "#move_pattern" do
+    it "returns a full range of horizontal and vertical adjustments" do
+      expect(rook.move_pattern).to eq(rook_pattern)
+    end
+  end
+
+  describe "#capture_pattern" do
+    it "returns a full range of horizontal and vertical adjustments" do
+      expect(rook.capture_pattern).to eq(rook_pattern)
     end
   end
 
