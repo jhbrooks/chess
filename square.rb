@@ -1,6 +1,7 @@
 # This class handles Squares on a chess board
 class Square
-  attr_reader :file, :rank, :piece
+  attr_reader :file, :rank
+  attr_accessor :piece
 
   def initialize(file, rank, piece)
     @file = file

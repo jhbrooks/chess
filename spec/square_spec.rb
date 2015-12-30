@@ -45,6 +45,13 @@ describe Square do
     end
   end
 
+  describe "#piece=" do
+    it "correctly sets a new piece" do
+      square.piece = nil
+      expect(square.piece).to be(nil)
+    end
+  end
+
   describe "#empty?" do
     context "when the Square has a piece" do
       it "returns false" do
