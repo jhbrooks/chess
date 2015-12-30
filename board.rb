@@ -14,6 +14,14 @@ class Board
     @diags = create_diagonals
   end
 
+  # Requires a valid original position
+  def make_move(orig_pos, targ_pos)
+    return false unless legal_moves(orig_pos).include?(targ_pos)
+    square(targ_pos).piece = square(orig_pos).piece
+    square(orig_pos).piece = nil
+    true
+  end
+
   def legal_moves(position)
     winnowed_moves(position) + winnowed_captures(position)
   end

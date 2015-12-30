@@ -138,6 +138,40 @@ describe Board do
     end
   end
 
+  describe "#make_move" do
+    context "when the move is not legal" do
+      it "returns false" do
+        expect(board.make_move([:d, 1], [:d, 7])).to be(false)
+      end
+
+      it "leaves the target square's piece unchanged" do
+        board.make_move([:d, 1], [:d, 7])
+        expect(board.rows[1].squares[3].piece).to be_an_instance_of(Pawn)
+      end
+
+      it "leaves the origin square's piece unchanged" do
+        board.make_move([:d, 1], [:d, 7])
+        expect(board.rows[7].squares[3].piece).to be_an_instance_of(Queen)
+      end
+    end
+
+    context "when the move is legal" do
+      it "returns true" do
+        expect(board.make_move([:d, 2], [:d, 4])).to be(true)
+      end
+
+      it "replaces the target square's piece with the origin square's" do
+        board.make_move([:d, 2], [:d, 4])
+        expect(board.rows[4].squares[3].piece).to be_an_instance_of(Pawn)
+      end
+
+      it "leaves the origin square empty" do
+        board.make_move([:d, 2], [:d, 4])
+        expect(board.rows[6].squares[3].empty?).to be(true)
+      end
+    end
+  end
+
   describe "#legal_moves" do
     context "returns a collection of moves (and captures) such that" do
       it "no off-board moves are included" do
@@ -149,13 +183,21 @@ describe Board do
       end
 
       it "captures of enemy pieces (if available) are included" do
-        pending("requires #move to set up example")
-        fail
+        board.make_move([:d, 2], [:d, 4])
+        board.make_move([:d, 4], [:d, 5])
+        board.make_move([:d, 5], [:d, 6])
+        expect(board.legal_moves([:d, 6]).include?([:e, 7])).to be(true)
       end
 
       it "no moves past pieces in the same row are included" do
-        pending("requires #move to set up example")
-        fail
+        board.make_move([:d, 2], [:d, 4])
+        board.make_move([:d, 4], [:d, 5])
+        board.make_move([:d, 5], [:d, 6])
+        board.make_move([:d, 6], [:e, 7])
+
+        board.make_move([:e, 2], [:e, 3])
+        board.make_move([:d, 1], [:d, 3])
+        expect(board.legal_moves([:d, 3]).include?([:f, 3])).to be(false)
       end
 
       it "no moves past pieces in the same column are included" do
