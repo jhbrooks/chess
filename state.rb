@@ -25,7 +25,12 @@ class State
   end
 
   def valid_target?(origin, target)
-    legal_moves(origin).include?(target)
+    board_legal = board.legal_moves(origin).include?(target)
+    state_legal = legal_moves(origin).include?(target)
+    if board_legal && !state_legal
+      puts "That move would leave you in check."
+    end
+    state_legal
   end
 
   def legal_moves(origin)

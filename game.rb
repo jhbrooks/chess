@@ -125,7 +125,8 @@ class Game
     origin
   end
 
-  # Requires state to have the #make_move method
+  # Requires state to have the #make_move method.
+  # Requires state to have the #current_player method.
   def make_move(origin)
     targ = [nil, nil]
     until targ.join("").upcase == "DROP" || state.valid_target?(origin, targ)
@@ -134,11 +135,16 @@ class Game
       targ = STDIN.gets.chomp.downcase.split("")
       targ = [targ[0].to_sym, targ[1].to_i] if targ.length == 2
     end
-    state.make_move(origin, targ)
-
     return false if targ.join("").upcase == "DROP"
 
-    game_over? ? puts(state) : advance_turn
+    state.make_move(origin, targ)
+
+    if game_over?
+      puts(state)
+    else
+      advance_turn
+      puts "Check." if state.current_player.in_check
+    end
 
     targ
   end
