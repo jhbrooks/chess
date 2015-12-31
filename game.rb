@@ -127,19 +127,20 @@ class Game
 
   # Requires state to have the #make_move method
   def make_move(origin)
-    target = [nil, nil]
-    until target.join("").upcase == "DROP" || state.make_move(origin, target)
-      puts "Invalid square! Please try again.\n\n" unless target == [nil, nil]
+    targ = [nil, nil]
+    until targ.join("").upcase == "DROP" || state.valid_target?(origin, targ)
+      puts "Invalid square! Please try again.\n\n" unless targ == [nil, nil]
       puts "Input the square where you'd like to move that piece (or DROP it)."
-      target = STDIN.gets.chomp.downcase.split("")
-      target = [target[0].to_sym, target[1].to_i] if target.length == 2
+      targ = STDIN.gets.chomp.downcase.split("")
+      targ = [targ[0].to_sym, targ[1].to_i] if targ.length == 2
     end
+    state.make_move(origin, targ)
 
-    return false if target.join("").upcase == "DROP"
+    return false if targ.join("").upcase == "DROP"
 
     game_over? ? puts(state) : advance_turn
 
-    target
+    targ
   end
 
   # Requires state to have the #turn= method
@@ -152,7 +153,7 @@ class Game
     self.quit_status = nil
   end
 
-  # The following methods are not yet implemented
+  # The following method is not yet implemented
   def save_game
     false
   end

@@ -342,19 +342,19 @@ describe Game do
     end
 
     it "gets a target" do
-      allow(game.state).to receive(:make_move).and_return(false, true)
+      allow(game.state).to receive(:valid_target?).and_return(false, true)
       expect(STDIN).to receive(:gets)
       game.make_move([:a, 2])
     end
 
-    it "checks to see if the target is valid by making a move" do
-      expect(game.state).to receive(:make_move).and_return(true)
+    it "checks to see if the target is valid" do
+      expect(game.state).to receive(:valid_target?).and_return(true)
       game.make_move([:a, 2])
     end
 
     context "when the target is valid" do
       before(:each) do
-        allow(game.state).to receive(:make_move).and_return(false, true)
+        allow(game.state).to receive(:valid_target?).and_return(false, true)
         allow(STDIN).to receive(:gets).and_return("a3")
       end
 
@@ -402,7 +402,7 @@ describe Game do
 
     context "when the target is invalid" do
       it "tries again" do
-        allow(game.state).to receive(:make_move)
+        allow(game.state).to receive(:valid_target?)
           .and_return(false, false, true)
         allow(STDIN).to receive(:gets).and_return("a0", "a3")
 
@@ -413,7 +413,7 @@ describe Game do
 
     context "when the target is the command 'DROP'" do
       before(:each) do
-        allow(game.state).to receive(:make_move).and_return(false, true)
+        allow(game.state).to receive(:valid_target?).and_return(false, true)
         allow(STDIN).to receive(:gets).and_return("drop")
       end
 

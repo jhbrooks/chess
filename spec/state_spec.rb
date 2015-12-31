@@ -56,6 +56,45 @@ describe State do
     end
   end
 
+  describe "#last_orig_piece" do
+    it "returns nil after initialization" do
+      expect(state.last_orig_piece).to be(nil)
+    end
+  end
+
+  describe "#last_orig_piece=" do
+    it "correctly sets a new last origin piece" do
+      state.last_orig_piece = :piece
+      expect(state.last_orig_piece).to eq(:piece)
+    end
+  end
+
+  describe "#last_targ_piece" do
+    it "returns nil after initialization" do
+      expect(state.last_targ_piece).to be(nil)
+    end
+  end
+
+  describe "#last_targ_piece=" do
+    it "correctly sets a new last target piece" do
+      state.last_targ_piece = :piece
+      expect(state.last_targ_piece).to eq(:piece)
+    end
+  end
+
+  describe "#last_check_status" do
+    it "returns nil after initialization" do
+      expect(state.last_check_status).to be(nil)
+    end
+  end
+
+  describe "#last_targ_piece=" do
+    it "correctly sets a new last check status" do
+      state.last_check_status = true
+      expect(state.last_check_status).to be(true)
+    end
+  end
+
   describe "#current_player" do
     context "when turn is odd" do
       it "returns the first player in players" do
@@ -94,6 +133,32 @@ describe State do
       it "returns true" do
         expect(state.valid_origin?([:a, 1])).to be(true)
       end
+    end
+  end
+
+  describe "#legal_moves" do
+    before(:each) do
+      true_state.make_move([:e, 2], [:e, 4])
+      true_state.make_move([:d, 1], [:h, 5])
+      true_state.make_move([:d, 2], [:d, 3])
+
+      true_state.make_move([:e, 7], [:e, 5])
+      true_state.make_move([:d, 8], [:h, 4])
+    end
+
+    it "does not include moves that place the current player in check" do
+      true_state.make_move([:h, 4], [:g, 4])
+      expect(true_state.legal_moves([:e, 1]).include?([:e, 2])).to be(false)
+    end
+
+    it "includes other legal moves" do
+      true_state.make_move([:h, 4], [:g, 4])
+      expect(true_state.legal_moves([:e, 1]).include?([:d, 2])).to be(true)
+    end
+
+    it "does not include moves that leave the current player in check" do
+      true_state.make_move([:h, 4], [:f, 2])
+      expect(true_state.legal_moves([:a, 2]).include?([:a, 3])).to be(false)
     end
   end
 
