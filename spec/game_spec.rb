@@ -381,6 +381,41 @@ describe Game do
           expect(game).to_not receive(:advance_turn)
           game.make_move([:a, 2])
         end
+
+        context "with a checkmate" do
+          before(:each) do
+            game.state.make_move([:f, 2], [:f, 3])
+            game.state.make_move([:g, 2], [:g, 4])
+
+            game.advance_turn
+            game.state.make_move([:e, 7], [:e, 5])
+            game.state.make_move([:d, 8], [:h, 4])
+          end
+
+          it "outputs a checkmate message" do
+            expect(STDOUT).to receive(:puts).with("Checkmate!")
+            game.make_move([:a, 2])
+          end
+        end
+
+        context "with a draw" do
+          before(:each) do
+            game.state.make_move([:f, 2], [:f, 3])
+            game.state.make_move([:g, 2], [:g, 4])
+
+            game.advance_turn
+            game.state.make_move([:e, 7], [:e, 5])
+            game.state.make_move([:d, 8], [:h, 4])
+
+            allow(game.state.next_player).to receive(:in_check)
+              .and_return(false)
+          end
+
+          it "outputs a draw message" do
+            expect(STDOUT).to receive(:puts).with("Draw.")
+            game.make_move([:a, 2])
+          end
+        end
       end
 
       context "when the move does not end the Game" do
@@ -492,22 +527,56 @@ describe Game do
   end
 
   describe "#game_over?" do
-    context "before #quit_play is called and confirmed" do
-      it "returns nil" do
-        expect(game.game_over?).to be(nil)
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+    end
+
+    context "when a checkmate occurs" do
+      before(:each) do
+        game.state.make_move([:f, 2], [:f, 3])
+        game.state.make_move([:g, 2], [:g, 4])
+
+        game.advance_turn
+        game.state.make_move([:e, 7], [:e, 5])
+        game.state.make_move([:d, 8], [:h, 4])
+      end
+
+      it "returns true" do
+        expect(game.game_over?).to be(true)
+      end
+    end
+
+    context "when a draw occurs" do
+      before(:each) do
+        game.state.make_move([:f, 2], [:f, 3])
+        game.state.make_move([:g, 2], [:g, 4])
+
+        game.advance_turn
+        game.state.make_move([:e, 7], [:e, 5])
+        game.state.make_move([:d, 8], [:h, 4])
+
+        game.state.players[0].in_check = false
+      end
+
+      it "returns true" do
+        expect(game.game_over?).to be(true)
       end
     end
 
     context "after #quit_play is called and confirmed" do
       it "returns true" do
-        allow(STDOUT).to receive(:puts)
-        allow(STDIN).to receive(:gets).and_return("p1", "p2")
-        allow(game).to receive(:play)
-        game.start_game
-
         expect(STDIN).to receive(:gets).and_return("yes")
         game.quit_play
         expect(game.game_over?).to be(true)
+      end
+    end
+
+    context "otherwise" do
+      it "returns false" do
+        expect(game.game_over?).to be(false)
       end
     end
   end

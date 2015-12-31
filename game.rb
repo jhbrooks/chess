@@ -70,7 +70,7 @@ class Game
   end
 
   def game_over?
-    quit_status
+    quit_status || state.game_over?
   end
 
   def request_play_command
@@ -140,6 +140,7 @@ class Game
     state.make_move(origin, targ)
 
     if game_over?
+      state.next_player.in_check ? puts("Checkmate!") : puts("Draw.")
       puts(state)
     else
       advance_turn

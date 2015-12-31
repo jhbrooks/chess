@@ -19,6 +19,10 @@ class State
     players[(turn - 1) % players.length]
   end
 
+  def next_player
+    players[turn % players.length]
+  end
+
   def valid_origin?(position)
     origin = board.square(position)
     origin && !origin.empty? && origin.piece.player == current_player
@@ -54,6 +58,21 @@ class State
       e_moves = enemy_squares.map { |e| board.legal_moves([e.file, e.rank]) }
       p.in_check = e_moves.any? { |mvs| mvs.include?([k.file, k.rank]) }
     end
+  end
+
+  def game_over?
+    self.turn += 1
+    non_empties = board.squares.reject(&:empty?)
+    friendly_squares = non_empties.select do |s|
+      s.piece.player == current_player
+    end
+    if friendly_squares.any? { |s| legal_moves([s.file, s.rank]) != [] }
+      result = false
+    else
+      result = true
+    end
+    self.turn -= 1
+    result
   end
 
   def to_s
