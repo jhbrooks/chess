@@ -16,10 +16,12 @@ end
 # This class handles Pieces in a game of chess
 class Piece
   attr_reader :player, :type
+  attr_accessor :unmoved
 
   def initialize(player, type)
     @player = player
     @type = type
+    @unmoved = true
   end
 
   # Requires player to have the #mark method
@@ -59,14 +61,6 @@ class King < Piece
     new(player, :king)
   end
 
-  attr_accessor :unmoved
-
-  def initialize(player, type)
-    @player = player
-    @type = type
-    @unmoved = true
-  end
-
   def move_pattern
     [[1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]]
   end
@@ -92,14 +86,6 @@ end
 class Pawn < Piece
   def self.create(player)
     new(player, :pawn)
-  end
-
-  attr_accessor :unmoved
-
-  def initialize(player, type)
-    @player = player
-    @type = type
-    @unmoved = true
   end
 
   # Requires player to have the #color method.
@@ -145,14 +131,6 @@ end
 class Rook < Piece
   def self.create(player)
     new(player, :rook)
-  end
-
-  attr_accessor :unmoved
-
-  def initialize(player, type)
-    @player = player
-    @type = type
-    @unmoved = true
   end
 
   def move_pattern
