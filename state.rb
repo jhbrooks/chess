@@ -3,7 +3,8 @@ require_relative "./board.rb"
 # This class handles States of games of chess
 class State
   attr_reader :players, :board, :line_w
-  attr_accessor :turn, :last_orig_piece, :last_targ_piece, :last_check_status
+  attr_accessor :turn, :last_orig_piece, :last_targ_piece,
+                :last_check_status, :last_unmoved_status
 
   def initialize(players, line_w)
     @players = players
@@ -13,6 +14,7 @@ class State
     @last_orig_piece = nil
     @last_targ_piece = nil
     @last_check_status = nil
+    @last_unmoved_status = nil
   end
 
   def current_player
@@ -49,6 +51,7 @@ class State
   # Requires all players to have the #in_check= method
   def make_move(orig_pos, targ_pos)
     board.make_move(orig_pos, targ_pos)
+    adjust_unmoved_status(targ_pos)
     players.each do |player|
       adjust_check_status(player)
     end
@@ -72,11 +75,13 @@ class State
 
   def store_last_move(orig_pos, targ_pos)
     self.last_orig_piece = board.square(orig_pos).piece
+    self.last_unmoved_status = last_orig_piece.unmoved
     self.last_targ_piece = board.square(targ_pos).piece
     self.last_check_status = current_player.in_check
   end
 
   def undo_move(orig_pos, targ_pos)
+    last_orig_piece.unmoved = last_unmoved_status
     board.square(orig_pos).piece = last_orig_piece
     board.square(targ_pos).piece = last_targ_piece
     current_player.in_check = last_check_status
@@ -84,6 +89,11 @@ class State
 
   def non_empties
     board.squares.reject(&:empty?)
+  end
+
+  # Requires piece to have the #unmoved= method
+  def adjust_unmoved_status(pos)
+    board.square(pos).piece.unmoved = false
   end
 
   # Requires all players to have the #in_check= method

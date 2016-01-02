@@ -94,6 +94,18 @@ describe State do
       expect(state.last_check_status).to be(true)
     end
   end
+  describe "#last_unmoved_status" do
+    it "returns nil after initialization" do
+      expect(state.last_unmoved_status).to be(nil)
+    end
+  end
+
+  describe "#last_unmoved_status=" do
+    it "correctly sets a new last check status" do
+      state.last_unmoved_status = true
+      expect(state.last_unmoved_status).to be(true)
+    end
+  end
 
   describe "#current_player" do
     context "when turn is odd" do
@@ -212,6 +224,13 @@ describe State do
       it "sets that player's @in_check attribute to false" do
         true_state.make_move([:d, 7], [:c, 8])
         expect(true_state.players[1].in_check).to be(false)
+      end
+    end
+
+    context "when the moved piece has the @unmoved attribute" do
+      it "sets @unmoved to false" do
+        true_state.make_move([:a, 2], [:a, 4])
+        expect(true_state.board.square([:a, 4]).piece.unmoved).to be(false)
       end
     end
   end
