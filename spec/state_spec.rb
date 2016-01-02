@@ -88,7 +88,7 @@ describe State do
     end
   end
 
-  describe "#last_targ_piece=" do
+  describe "#last_check_status=" do
     it "correctly sets a new last check status" do
       state.last_check_status = true
       expect(state.last_check_status).to be(true)
