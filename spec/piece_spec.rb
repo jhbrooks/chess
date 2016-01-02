@@ -5,7 +5,7 @@ describe Piece do
   let(:player) { Player.new(:p1, :White) }
   let(:true_piece) { Piece.new(player, :pawn) }
 
-  describe "#new" do
+  describe ".new" do
     context "when given 2 arguments (player, type)" do
       it "returns a Piece object" do
         expect(piece).to be_an_instance_of(Piece)

@@ -1,7 +1,8 @@
 require_relative "./state.rb"
 require_relative "./player.rb"
 
-# This class operates Games of chess
+# This class operates Games of chess.
+# Use Game.new.set_up to begin.
 class Game
   attr_reader :setup_commands, :play_commands
   attr_accessor :state, :quit_status
@@ -107,38 +108,53 @@ class Game
     puts "\n#{state.current_player} has quit!"
   end
 
-  # Requires state to have the #valid_origin? method.
+  # Requires state to have the #valid_orig_pos? method.
+  # Require state to have the #valid_targ_pos? method.
+  # Requires state to have the #next_player method.
+  # Requires state to have the #current_player method.
   # Requires state to have the #make_move method.
   def determine_and_make_move
-    make_move(determine_origin)
+    orig_pos = determine_orig_pos
+    targ_pos = determine_targ_pos(orig_pos)
+    make_move(orig_pos, targ_pos) if targ_pos
   end
 
-  # Requires state to have the #valid_origin? method
-  def determine_origin
-    origin = [nil, nil]
-    until state.valid_origin?(origin)
-      puts "Invalid square! Please try again.\n\n" unless origin == [nil, nil]
-      puts "Input the square (e.g. a1) with the piece you'd like to move."
-      origin = STDIN.gets.chomp.downcase.split("")
-      origin = [origin[0].to_sym, origin[1].to_i] if origin.length == 2
+  # Requires state to have the #valid_orig_pos? method
+  def determine_orig_pos
+    orig_pos = [nil, nil]
+    until state.valid_orig_pos?(orig_pos)
+      puts "Invalid input! Please try again.\n\n" unless orig_pos == [nil, nil]
+      puts "Input where (e.g. a1) you'd like to move from."
+      orig_pos = STDIN.gets.chomp.downcase.+("  ").split("")
+      orig_pos = [orig_pos[0].to_sym, orig_pos[1].to_i]
     end
-    origin
+    orig_pos
+  end
+
+  # Require state to have the #valid_targ_pos? method.
+  def determine_targ_pos(orig_pos)
+    targ_pos = [nil, nil]
+    until state.valid_targ_pos?(orig_pos, targ_pos)
+      puts "Invalid input! Please try again.\n\n" unless targ_pos == [nil, nil]
+      puts "Input where you'd like to move to (or DROP the piece)."
+      targ_pos = STDIN.gets.chomp.downcase.+("  ").split("")
+      return false if targ_pos.join("").upcase.include?("DROP")
+      targ_pos = [targ_pos[0].to_sym, targ_pos[1].to_i]
+    end
+    targ_pos
   end
 
   # Requires state to have the #make_move method.
+  # Requires state to have the #next_player method.
   # Requires state to have the #current_player method.
-  def make_move(origin)
-    targ = [nil, nil]
-    until targ.join("").upcase == "DROP" || state.valid_target?(origin, targ)
-      puts "Invalid square! Please try again.\n\n" unless targ == [nil, nil]
-      puts "Input the square where you'd like to move that piece (or DROP it)."
-      targ = STDIN.gets.chomp.downcase.split("")
-      targ = [targ[0].to_sym, targ[1].to_i] if targ.length == 2
-    end
-    return false if targ.join("").upcase == "DROP"
+  def make_move(orig_pos, targ_pos)
+    state.make_move(orig_pos, targ_pos)
+    take_post_move_actions
+  end
 
-    state.make_move(origin, targ)
-
+  # Requires state to have the #next_player method.
+  # Requires state to have the #current_player method.
+  def take_post_move_actions
     if game_over?
       state.next_player.in_check ? puts("Checkmate!") : puts("Draw.")
       puts(state)
@@ -146,8 +162,6 @@ class Game
       advance_turn
       puts "Check." if state.current_player.in_check
     end
-
-    targ
   end
 
   # Requires state to have the #turn= method

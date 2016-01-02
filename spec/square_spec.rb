@@ -7,7 +7,7 @@ describe Square do
   let(:true_square) { Square.new(:a, 1, piece) }
   let(:empty_square) { Square.new(:a, 1, nil) }
 
-  describe "#new" do
+  describe ".new" do
     context "when given 3 arguments (file, rank, piece)" do
       it "returns a Square object" do
         expect(square).to be_an_instance_of(Square)
@@ -49,6 +49,12 @@ describe Square do
     it "correctly sets a new piece" do
       square.piece = nil
       expect(square.piece).to be(nil)
+    end
+  end
+
+  describe "#pos" do
+    it "returns an array containing the Square's file and rank" do
+      expect(square.pos).to eq([:a, 1])
     end
   end
 

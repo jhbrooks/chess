@@ -23,27 +23,25 @@ class State
     players[turn % players.length]
   end
 
-  def valid_origin?(position)
-    origin = board.square(position)
+  def valid_orig_pos?(orig_pos)
+    origin = board.square(orig_pos)
     origin && !origin.empty? && origin.piece.player == current_player
   end
 
-  def valid_target?(origin, target)
-    board_legal = board.legal_moves(origin).include?(target)
-    state_legal = legal_moves(origin).include?(target)
-    if board_legal && !state_legal
-      puts "That move would leave you in check."
-    end
-    state_legal
+  def valid_targ_pos?(orig_pos, targ_pos)
+    board_legals = board.legal_moves(orig_pos).include?(targ_pos)
+    state_legals = legal_moves(orig_pos).include?(targ_pos)
+    puts "That move would leave you in check." if board_legals && !state_legals
+    state_legals
   end
 
-  def legal_moves(origin)
+  def legal_moves(orig_pos)
     state_legal_moves = []
-    board.legal_moves(origin).each do |move|
-      store_last_move(origin, move)
-      make_move(origin, move)
+    board.legal_moves(orig_pos).each do |move|
+      store_last_move(orig_pos, move)
+      make_move(orig_pos, move)
       state_legal_moves << move unless current_player.in_check
-      undo_move(origin, move)
+      undo_move(orig_pos, move)
     end
     state_legal_moves
   end
@@ -51,28 +49,18 @@ class State
   # Requires all players to have the #in_check= method
   def make_move(orig_pos, targ_pos)
     board.make_move(orig_pos, targ_pos)
-    players.each do |p|
-      non_empties = board.squares.reject(&:empty?)
-      enemy_squares = non_empties.select { |s| s.piece.player != p }
-      k = non_empties.find { |s| s.piece.player == p && s.piece.is_a?(King) }
-      e_moves = enemy_squares.map { |e| board.legal_moves([e.file, e.rank]) }
-      p.in_check = e_moves.any? { |mvs| mvs.include?([k.file, k.rank]) }
+    players.each do |player|
+      adjust_check_status(player)
     end
   end
 
   def game_over?
+    over = false
     self.turn += 1
-    non_empties = board.squares.reject(&:empty?)
-    friendly_squares = non_empties.select do |s|
-      s.piece.player == current_player
-    end
-    if friendly_squares.any? { |s| legal_moves([s.file, s.rank]) != [] }
-      result = false
-    else
-      result = true
-    end
+    friendlies = non_empties.select { |s| s.piece.player == current_player }
+    over = true if friendlies.all? { |s| legal_moves(s.pos).empty? }
     self.turn -= 1
-    result
+    over
   end
 
   def to_s
@@ -82,16 +70,36 @@ class State
 
   private
 
-  def store_last_move(origin, target)
-    self.last_orig_piece = board.square(origin).piece
-    self.last_targ_piece = board.square(target).piece
+  def store_last_move(orig_pos, targ_pos)
+    self.last_orig_piece = board.square(orig_pos).piece
+    self.last_targ_piece = board.square(targ_pos).piece
     self.last_check_status = current_player.in_check
   end
 
-  def undo_move(origin, target)
-    board.square(origin).piece = last_orig_piece
-    board.square(target).piece = last_targ_piece
+  def undo_move(orig_pos, targ_pos)
+    board.square(orig_pos).piece = last_orig_piece
+    board.square(targ_pos).piece = last_targ_piece
     current_player.in_check = last_check_status
+  end
+
+  def non_empties
+    board.squares.reject(&:empty?)
+  end
+
+  # Requires all players to have the #in_check= method
+  def adjust_check_status(player)
+    enemies = non_empties.select { |s| s.piece.player != player }
+    player.in_check = moves_for_squares(enemies).any? do |moves|
+      moves.include?(king_square(player).pos)
+    end
+  end
+
+  def moves_for_squares(sqrs)
+    sqrs.map { |s| board.legal_moves(s.pos) }
+  end
+
+  def king_square(player)
+    non_empties.find { |s| s.piece.player == player && s.piece.is_a?(King) }
   end
 
   def status_string

@@ -21,7 +21,7 @@ describe Arrangement do
   let(:origin) { ta[4] }
   let(:edge_origin) { ta[6] }
 
-  describe "#new" do
+  describe ".new" do
     context "when given 1 argument (squares)" do
       it "returns an Arrangement object" do
         expect(arrangement).to be_an_instance_of(Arrangement)

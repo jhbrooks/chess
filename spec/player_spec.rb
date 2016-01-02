@@ -3,7 +3,7 @@ require "spec_helper"
 describe Player do
   let(:player) { Player.new(:p1, :White) }
 
-  describe "#new" do
+  describe ".new" do
     context "when given 2 arguments (name, color)" do
       it "returns a Player object" do
         expect(player).to be_an_instance_of(Player)

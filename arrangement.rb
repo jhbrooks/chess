@@ -9,7 +9,7 @@ class Arrangement
   # Requires all squares to have the #empty? method
   def blocked_moves(origin)
     return [] unless squares.include?(origin)
-    before_blocked_squares(origin) + after_blocked_squares(origin)
+    blocked_squares(squares, origin) + blocked_squares(squares.reverse, origin)
   end
 
   # Requires all squares to have the #empty? method.
@@ -17,33 +17,19 @@ class Arrangement
   def blocked_captures(origin)
     return [] unless squares.include?(origin)
 
-    blocked_squares_minus_captures(before_blocked_squares(origin), origin)
-      .+(blocked_squares_minus_captures(after_blocked_squares(origin), origin))
+    blocked_minus_caps(blocked_squares(squares, origin), origin)
+      .+(blocked_minus_caps(blocked_squares(squares.reverse, origin), origin))
   end
 
   private
 
   # Requires all squares to have the #empty? method
-  def before_blocked_squares(origin)
+  def blocked_squares(sqrs, origin)
     blocked_squares = []
     available_squares = []
-    squares.take_while { |square| square != origin }.each do |square|
-      available_squares << square
-      unless square.empty?
-        blocked_squares += available_squares
-        available_squares = []
-      end
-    end
-    blocked_squares
-  end
-
-  # Requires all squares to have the #empty? method
-  def after_blocked_squares(origin)
-    blocked_squares = []
-    available_squares = []
-    squares.reverse.take_while { |square| square != origin }.each do |square|
-      available_squares << square
-      unless square.empty?
+    sqrs.take_while { |s| s != origin }.each do |s|
+      available_squares << s
+      unless s.empty?
         blocked_squares += available_squares
         available_squares = []
       end
@@ -53,12 +39,12 @@ class Arrangement
 
   # Requires all squares to have the #empty? method.
   # Requires some non-empty squares and origin to have a piece with a player.
-  def blocked_squares_minus_captures(blocked_squares, origin)
-    return [] if blocked_squares.empty?
-    unless blocked_squares[-1].piece.player == origin.piece.player
-      blocked_squares = blocked_squares[0..-2]
+  def blocked_minus_caps(blocked, origin)
+    return [] if blocked.empty?
+    unless blocked[-1].piece.player == origin.piece.player
+      blocked = blocked[0..-2]
     end
-    blocked_squares
+    blocked
   end
 end
 

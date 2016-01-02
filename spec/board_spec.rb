@@ -4,7 +4,7 @@ describe Board do
   let(:players) { [Player.new(:p1, :White), Player.new(:p2, :Black)] }
   let(:board) { Board.new(players, 24) }
 
-  describe "#new" do
+  describe ".new" do
     context "when given 2 arguments (players, line_w)" do
       it "returns a Board object" do
         expect(board).to be_an_instance_of(Board)
@@ -186,12 +186,6 @@ describe Board do
     context "when the given position matches an off-board square" do
       it "returns a falsey value" do
         expect(board.square([:a, 0])).to be_falsey
-      end
-    end
-
-    context "when the given position is not a well-formatted array" do
-      it "returns false" do
-        expect(board.square([])).to be(false)
       end
     end
   end

@@ -9,6 +9,10 @@ class Square
     @piece = piece
   end
 
+  def pos
+    [file, rank]
+  end
+
   def empty?
     piece.nil?
   end

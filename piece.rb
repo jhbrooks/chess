@@ -102,13 +102,15 @@ class Pawn < Piece
     @unmoved = true
   end
 
-  # Requires player to have the #color method
+  # Requires player to have the #color method.
+  # Requires color to be capitalized.
   def move_pattern
     return player.color == :White ? [[0, 1]] : [[0, -1]] unless unmoved
     player.color == :White ? [[0, 1], [0, 2]] : [[0, -1], [0, -2]]
   end
 
-  # Requires player to have the #color method
+  # Requires player to have the #color method.
+  # Requires color to be capitalized.
   def capture_pattern
     player.color == :White ? [[1, 1], [-1, 1]] : [[1, -1], [-1, -1]]
   end
