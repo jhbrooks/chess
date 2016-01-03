@@ -4,7 +4,8 @@ require_relative "./board.rb"
 class State
   attr_reader :players, :board, :line_w
   attr_accessor :turn, :last_orig_piece, :last_targ_piece,
-                :last_check_status, :last_unmoved_status
+                :last_check_status, :last_unmoved_status,
+                :en_pass_pos
 
   def initialize(players, line_w)
     @players = players
@@ -15,6 +16,7 @@ class State
     @last_targ_piece = nil
     @last_check_status = nil
     @last_unmoved_status = nil
+    @en_pass_pos = nil
   end
 
   def current_player
@@ -64,6 +66,11 @@ class State
     over = true if friendlies.all? { |s| legal_moves(s.pos).empty? }
     self.turn -= 1
     over
+  end
+
+  def pawn_moved_two(orig_pos, targ_pos)
+    difference = (orig_pos[1] - targ_pos[1]).abs
+    board.square(targ_pos).piece.is_a?(Pawn) && difference == 2
   end
 
   def to_s

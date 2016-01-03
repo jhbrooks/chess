@@ -149,24 +149,35 @@ class Game
   # Requires state to have the #current_player method.
   def make_move(orig_pos, targ_pos)
     state.make_move(orig_pos, targ_pos)
-    take_post_move_actions
+    take_post_move_actions(orig_pos, targ_pos)
   end
 
   # Requires state to have the #next_player method.
   # Requires state to have the #current_player method.
-  def take_post_move_actions
+  # Requires state to have the #en_pass_pos method.
+  # Requires state to have the #pawn_moved_two method.
+  def take_post_move_actions(orig_pos, targ_pos)
     if game_over?
       state.next_player.in_check ? puts("Checkmate!") : puts("Draw.")
       puts(state)
     else
       advance_turn
       puts "Check." if state.current_player.in_check
+      adjust_en_pass_pos(orig_pos, targ_pos)
     end
   end
 
   # Requires state to have the #turn= method
   def advance_turn
     state.turn += 1
+  end
+
+  def adjust_en_pass_pos(orig_pos, targ_pos)
+    if state.pawn_moved_two(orig_pos, targ_pos)
+      state.en_pass_pos = targ_pos
+    else
+      state.en_pass_pos = nil
+    end
   end
 
   def reset_game

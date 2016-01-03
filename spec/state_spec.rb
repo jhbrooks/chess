@@ -94,6 +94,7 @@ describe State do
       expect(state.last_check_status).to be(true)
     end
   end
+
   describe "#last_unmoved_status" do
     it "returns nil after initialization" do
       expect(state.last_unmoved_status).to be(nil)
@@ -104,6 +105,19 @@ describe State do
     it "correctly sets a new last check status" do
       state.last_unmoved_status = true
       expect(state.last_unmoved_status).to be(true)
+    end
+  end
+
+  describe "#en_pass_pos" do
+    it "returns nil after initialization" do
+      expect(state.en_pass_pos).to be(nil)
+    end
+  end
+
+  describe "#en_pass_pos=" do
+    it "correctly sets a new en passant position" do
+      state.en_pass_pos = [:a, 4]
+      expect(state.en_pass_pos).to eq([:a, 4])
     end
   end
 
@@ -231,6 +245,44 @@ describe State do
       it "sets @unmoved to false" do
         true_state.make_move([:a, 2], [:a, 4])
         expect(true_state.board.square([:a, 4]).piece.unmoved).to be(false)
+      end
+    end
+  end
+
+  describe "#pawn_moved_two" do
+    context "when given origin and target positions 2 apart" do
+      context "with a Pawn in the target position square" do
+        it "returns true" do
+          true_state.make_move([:a, 2], [:a, 4])
+          expect(true_state.pawn_moved_two([:a, 2], [:a, 4])).to be(true)
+        end
+      end
+
+      context "with some other piece in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 2], [:a, 4])
+          true_state.make_move([:a, 4], [:a, 5])
+          true_state.make_move([:a, 1], [:a, 2])
+          true_state.make_move([:a, 2], [:a, 4])
+          expect(true_state.pawn_moved_two([:a, 2], [:a, 4])).to be(false)
+        end
+      end
+    end
+
+    context "when given origin and target positions less than 2 apart" do
+      context "with a Pawn in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 2], [:a, 3])
+          expect(true_state.pawn_moved_two([:a, 2], [:a, 3])).to be(false)
+        end
+      end
+
+      context "with some other piece in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 2], [:a, 4])
+          true_state.make_move([:a, 1], [:a, 2])
+          expect(true_state.pawn_moved_two([:a, 2], [:a, 3])).to be(false)
+        end
       end
     end
   end

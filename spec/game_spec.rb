@@ -480,6 +480,11 @@ describe Game do
         expect(game).to receive(:advance_turn)
         game.make_move([:a, 2], [:a, 3])
       end
+
+      it "adjusts the en passant position" do
+        expect(game).to receive(:adjust_en_pass_pos)
+        game.make_move([:a, 2], [:a, 3])
+      end
     end
   end
 
