@@ -139,27 +139,7 @@ describe Board do
   end
 
   describe "#make_move" do
-    context "when the move is not legal" do
-      it "returns false" do
-        expect(board.make_move([:d, 1], [:d, 7])).to be(false)
-      end
-
-      it "leaves the target square's piece unchanged" do
-        board.make_move([:d, 1], [:d, 7])
-        expect(board.rows[1].squares[3].piece).to be_an_instance_of(Pawn)
-      end
-
-      it "leaves the origin square's piece unchanged" do
-        board.make_move([:d, 1], [:d, 7])
-        expect(board.rows[7].squares[3].piece).to be_an_instance_of(Queen)
-      end
-    end
-
     context "when the move is legal" do
-      it "returns true" do
-        expect(board.make_move([:d, 2], [:d, 4])).to be(true)
-      end
-
       it "replaces the target square's piece with the origin square's" do
         board.make_move([:d, 2], [:d, 4])
         expect(board.rows[4].squares[3].piece).to be_an_instance_of(Pawn)
