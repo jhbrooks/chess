@@ -139,16 +139,14 @@ describe Board do
   end
 
   describe "#make_move" do
-    context "when the move is legal" do
-      it "replaces the target square's piece with the origin square's" do
-        board.make_move([:d, 2], [:d, 4])
-        expect(board.rows[4].squares[3].piece).to be_an_instance_of(Pawn)
-      end
+    it "replaces the target square's piece with the origin square's" do
+      board.make_move([:d, 2], [:d, 4])
+      expect(board.rows[4].squares[3].piece).to be_an_instance_of(Pawn)
+    end
 
-      it "leaves the origin square empty" do
-        board.make_move([:d, 2], [:d, 4])
-        expect(board.rows[6].squares[3].empty?).to be(true)
-      end
+    it "leaves the origin square empty" do
+      board.make_move([:d, 2], [:d, 4])
+      expect(board.rows[6].squares[3].empty?).to be(true)
     end
   end
 
@@ -172,6 +170,11 @@ describe Board do
 
   describe "#legal_moves" do
     context "returns a collection of moves (and captures) such that" do
+      it "moves to unblocked empty squares are included" do
+        board.make_move([:d, 2], [:e, 3])
+        expect(board.legal_moves([:d, 1]).include?([:d, 6])).to be(true)
+      end
+
       it "no off-board moves are included" do
         expect(board.legal_moves([:d, 1]).include?([:d, 0])).to be(false)
       end
@@ -181,18 +184,11 @@ describe Board do
       end
 
       it "captures of enemy pieces (if available) are included" do
-        board.make_move([:d, 2], [:d, 4])
-        board.make_move([:d, 4], [:d, 5])
-        board.make_move([:d, 5], [:d, 6])
+        board.make_move([:d, 2], [:d, 6])
         expect(board.legal_moves([:d, 6]).include?([:e, 7])).to be(true)
       end
 
       it "no moves past pieces in the same row are included" do
-        board.make_move([:d, 2], [:d, 4])
-        board.make_move([:d, 4], [:d, 5])
-        board.make_move([:d, 5], [:d, 6])
-        board.make_move([:d, 6], [:e, 7])
-
         board.make_move([:e, 2], [:e, 3])
         board.make_move([:d, 1], [:d, 3])
         expect(board.legal_moves([:d, 3]).include?([:f, 3])).to be(false)
@@ -206,12 +202,10 @@ describe Board do
         expect(board.legal_moves([:d, 1]).include?([:f, 3])).to be(false)
       end
 
-      context "when the given origin position's square contains a pawn" do
+      context "when the given origin position's square contains a Pawn" do
         context "with captures available" do
           it "the captures are included" do
-            board.make_move([:c, 7], [:c, 5])
-            board.make_move([:c, 5], [:c, 4])
-            board.make_move([:c, 4], [:c, 3])
+            board.make_move([:c, 7], [:c, 3])
             expect(board.legal_moves([:b, 2]).include?([:c, 3])).to be(true)
           end
         end
@@ -220,6 +214,22 @@ describe Board do
           it "the potential captures are not included" do
             expect(board.legal_moves([:b, 2]).include?([:c, 3])).to be(false)
           end
+        end
+      end
+
+      context "when the given origin position's square contains a Knight" do
+        it "moves to empty squares are included" do
+          expect(board.legal_moves([:g, 1]).include?([:h, 3])).to be(true)
+        end
+
+        it "captures of enemy pieces (if available) are included" do
+          board.make_move([:h, 8], [:h, 3])
+          expect(board.legal_moves([:g, 1]).include?([:h, 3])).to be(true)
+        end
+
+        it "no captures of friendly pieces are included" do
+          board.make_move([:h, 1], [:h, 3])
+          expect(board.legal_moves([:g, 1]).include?([:h, 3])).to be(false)
         end
       end
     end

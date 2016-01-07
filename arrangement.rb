@@ -7,18 +7,9 @@ class Arrangement
   end
 
   # Requires all squares to have the #empty? method
-  def blocked_moves(origin)
+  def relevant_blocked_squares(origin)
     return [] unless squares.include?(origin)
     blocked_squares(squares, origin) + blocked_squares(squares.reverse, origin)
-  end
-
-  # Requires all squares to have the #empty? method.
-  # Requires some non-empty squares and origin to have a piece with a player.
-  def blocked_captures(origin)
-    return [] unless squares.include?(origin)
-
-    blocked_minus_caps(blocked_squares(squares, origin), origin)
-      .+(blocked_minus_caps(blocked_squares(squares.reverse, origin), origin))
   end
 
   private
@@ -28,23 +19,13 @@ class Arrangement
     blocked_squares = []
     available_squares = []
     sqrs.take_while { |s| s != origin }.each do |s|
-      available_squares << s
       unless s.empty?
         blocked_squares += available_squares
         available_squares = []
       end
+      available_squares << s
     end
     blocked_squares
-  end
-
-  # Requires all squares to have the #empty? method.
-  # Requires some non-empty squares and origin to have a piece with a player.
-  def blocked_minus_caps(blocked, origin)
-    return [] if blocked.empty?
-    unless blocked[-1].piece.player == origin.piece.player
-      blocked = blocked[0..-2]
-    end
-    blocked
   end
 end
 

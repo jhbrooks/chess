@@ -1,25 +1,7 @@
 require "spec_helper"
 
 describe Arrangement do
-  let(:arrangement) do
-    Arrangement.new(%w(a1 b2))
-  end
-  let(:p1) { Player.new(:p1, :White) }
-  let(:p2) { Player.new(:p2, :Black) }
-  let(:w_piece) { Queen.create(p1) }
-  let(:b_piece) { Queen.create(p2) }
-  let(:true_arrangement) do
-    Arrangement.new([Square.new(:a, 1, nil),
-                     Square.new(:b, 1, b_piece),
-                     Square.new(:c, 1, w_piece),
-                     Square.new(:d, 1, nil),
-                     Square.new(:e, 1, w_piece),
-                     Square.new(:f, 1, b_piece),
-                     Square.new(:g, 1, b_piece)])
-  end
-  let(:ta) { true_arrangement.squares }
-  let(:origin) { ta[4] }
-  let(:edge_origin) { ta[6] }
+  let(:arrangement) { Arrangement.new(%w(a1 b2)) }
 
   describe ".new" do
     context "when given 1 argument (squares)" do
@@ -47,58 +29,85 @@ describe Arrangement do
     end
   end
 
-  describe "#blocked_moves" do
+  describe "#relevant_blocked_squares" do
+    let(:misc_arrangement) do
+      Arrangement.new([Square.new(:a, 1, nil),
+                       Square.new(:b, 1, :p),
+                       Square.new(:c, 1, :p),
+                       Square.new(:d, 1, nil),
+                       Square.new(:e, 1, :p),
+                       Square.new(:f, 1, :p),
+                       Square.new(:g, 1, :p)])
+    end
+    let(:ma_s) { misc_arrangement.squares }
+    let(:ma_orig) { ma_s[4] }
+
     context "when given an origin square not within the Arrangement" do
       it "returns an empty array" do
-        expect(true_arrangement.blocked_moves(:fake_origin)).to eq([])
+        expect(misc_arrangement.relevant_blocked_squares(:fake_origin))
+          .to eq([])
       end
     end
 
     context "when given an origin square within the Arrangement" do
+      let(:beg_orig_arrangement) do
+        Arrangement.new([Square.new(:c, 1, :p),
+                         Square.new(:d, 1, nil),
+                         Square.new(:e, 1, :p),
+                         Square.new(:f, 1, :p),
+                         Square.new(:g, 1, nil)])
+      end
+      let(:boa_s) { beg_orig_arrangement.squares }
+      let(:boa_orig) { boa_s[0] }
+      let(:beg_block_orig) { boa_s[2] }
+
+      let(:end_orig_arrangement) do
+        Arrangement.new([Square.new(:d, 1, nil),
+                         Square.new(:e, 1, :p),
+                         Square.new(:f, 1, :p),
+                         Square.new(:g, 1, nil),
+                         Square.new(:h, 1, :p)])
+      end
+      let(:eoa_s) { end_orig_arrangement.squares }
+      let(:eoa_orig) { eoa_s[4] }
+      let(:end_block_orig) { eoa_s[2] }
+
       it "returns an array of squares not accessible to the origin square" do
-        expect(true_arrangement.blocked_moves(origin))
-          .to eq([ta[0], ta[1], ta[2], ta[6], ta[5]])
+        expect(misc_arrangement.relevant_blocked_squares(ma_orig))
+          .to eq([ma_s[0], ma_s[1], ma_s[6]])
       end
 
-      it "includes the blocking squares" do
-        expect(true_arrangement.blocked_moves(origin).include?(ta[5]))
-          .to be(true)
-      end
-    end
-  end
-
-  describe "#blocked_captures" do
-    context "when given an origin square not within the Arrangement" do
-      it "returns an empty array" do
-        expect(true_arrangement.blocked_captures(:fake_origin)).to eq([])
-      end
-    end
-
-    context "when given an origin square within the Arrangement" do
-      it "returns an array of squares not accessible to the origin square" do
-        expect(true_arrangement.blocked_captures(origin))
-          .to eq([ta[0], ta[1], ta[2], ta[6]])
+      it "does not include the blocking squares" do
+        expect(misc_arrangement.relevant_blocked_squares(ma_orig)
+          .include?(ma_s[5])).to be(false)
       end
 
-      context "with a blocking square with a friendly piece" do
-        it "includes the blocking square" do
-          expect(true_arrangement.blocked_captures(origin).include?(ta[2]))
-            .to be(true)
+      context "with that square at the beginning of the Arrangement" do
+        it "returns an array of squares not accessible to the origin square" do
+          expect(beg_orig_arrangement.relevant_blocked_squares(boa_orig))
+            .to eq([boa_s[4], boa_s[3]])
         end
       end
 
-      context "with a blocking square with an enemy piece" do
-        it "does not include the blocking square" do
-          expect(true_arrangement.blocked_captures(origin).include?(ta[5]))
-            .to be(false)
+      context "with that square at the end of the Arrangement" do
+        it "returns an array of squares not accessible to the origin square" do
+          expect(end_orig_arrangement.relevant_blocked_squares(eoa_orig))
+            .to eq([eoa_s[0], eoa_s[1]])
         end
       end
-    end
 
-    context "when given an origin square on one edge of the Arrangement" do
-      it "returns an array of squares not accessible to the origin square" do
-        expect(true_arrangement.blocked_captures(edge_origin))
-          .to eq([ta[0], ta[1], ta[2], ta[3], ta[4], ta[5]])
+      context "with a blocking square at the beginning of the Arrangement" do
+        it "returns an array of squares not accessible to the origin square" do
+          expect(beg_orig_arrangement.relevant_blocked_squares(beg_block_orig))
+            .to eq([boa_s[4]])
+        end
+      end
+
+      context "with a blocking square at the end of the Arrangement" do
+        it "returns an array of squares not accessible to the origin square" do
+          expect(end_orig_arrangement.relevant_blocked_squares(end_block_orig))
+            .to eq([eoa_s[0]])
+        end
       end
     end
   end

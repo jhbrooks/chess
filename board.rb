@@ -21,7 +21,7 @@ class Board
 
   def square(pos)
     squares.find do |s|
-      s.file == pos[0] && s.rank == pos[1]
+      s.pos == pos
     end
   end
 
@@ -137,39 +137,26 @@ class Board
       squares.map(&:file).include?(m[0]) && squares.map(&:rank).include?(m[1])
     end
 
-    delete_invalid_moves(onboard_moves, origin)
-
-    onboard_moves
+    base_valids = select_empties(onboard_moves)
+    reject_invalid_moves(base_valids, origin)
   end
 
-  def delete_invalid_moves(onboard_moves, origin)
-    delete_row_blocked_moves(onboard_moves, origin)
-    delete_col_blocked_moves(onboard_moves, origin)
-    delete_diag_blocked_moves(onboard_moves, origin)
+  def reject_invalid_moves(base_valids, origin)
+    row_valids = reject_blocked_moves(rows, base_valids, origin)
+    row_col_valids = reject_blocked_moves(cols, row_valids, origin)
+    reject_blocked_moves(diags, row_col_valids, origin)
   end
 
-  def delete_row_blocked_moves(onboard_moves, origin)
-    rows.each do |row|
-      onboard_moves.delete_if do |move|
-        row.blocked_moves(origin).include?(square(move))
-      end
+  def select_empties(moves)
+    moves.select { |move| square(move).empty? }
+  end
+
+  def reject_blocked_moves(arrangement_array, moves, origin)
+    arrangement_array.each do |arrangement|
+      blocked_moves = arrangement.relevant_blocked_squares(origin).map(&:pos)
+      moves -= blocked_moves unless blocked_moves.empty?
     end
-  end
-
-  def delete_col_blocked_moves(onboard_moves, origin)
-    cols.each do |col|
-      onboard_moves.delete_if do |move|
-        col.blocked_moves(origin).include?(square(move))
-      end
-    end
-  end
-
-  def delete_diag_blocked_moves(onboard_moves, origin)
-    diags.each do |diag|
-      onboard_moves.delete_if do |move|
-        diag.blocked_moves(origin).include?(square(move))
-      end
-    end
+    moves
   end
 
   def winnowed_captures(orig_pos)
@@ -178,43 +165,13 @@ class Board
       squares.map(&:file).include?(c[0]) && squares.map(&:rank).include?(c[1])
     end
 
-    delete_invalid_captures(onboard_captures, origin)
-
-    onboard_captures
+    base_valids = reject_empties_and_friendlies(onboard_captures, origin)
+    reject_invalid_moves(base_valids, origin)
   end
 
-  def delete_invalid_captures(onboard_captures, origin)
-    delete_empties(onboard_captures)
-    delete_row_blocked_captures(onboard_captures, origin)
-    delete_col_blocked_captures(onboard_captures, origin)
-    delete_diag_blocked_captures(onboard_captures, origin)
-  end
-
-  def delete_empties(onboard_captures)
-    onboard_captures.delete_if { |cap| square(cap).empty? }
-  end
-
-  def delete_row_blocked_captures(onboard_captures, origin)
-    rows.each do |row|
-      onboard_captures.delete_if do |cap|
-        row.blocked_captures(origin).include?(square(cap))
-      end
-    end
-  end
-
-  def delete_col_blocked_captures(onboard_captures, origin)
-    cols.each do |col|
-      onboard_captures.delete_if do |cap|
-        col.blocked_captures(origin).include?(square(cap))
-      end
-    end
-  end
-
-  def delete_diag_blocked_captures(onboard_captures, origin)
-    diags.each do |diag|
-      onboard_captures.delete_if do |cap|
-        diag.blocked_captures(origin).include?(square(cap))
-      end
+  def reject_empties_and_friendlies(moves, origin)
+    moves.reject { |move| square(move).empty? }.reject do |move|
+      square(move).piece.player == origin.piece.player
     end
   end
 
