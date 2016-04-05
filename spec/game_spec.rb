@@ -416,16 +416,14 @@ describe Game do
     end
 
     context "when the move ends the Game" do
-      before(:each) do
-        allow(game).to receive(:game_over?).and_return(true)
-      end
-
       it "outputs the state" do
+        allow(game).to receive(:game_over?).and_return(true)
         expect(STDOUT).to receive(:puts).with(game.state)
         game.make_move([:a, 2], [:a, 3])
       end
 
       it "does not advance the turn" do
+        allow(game).to receive(:game_over?).and_return(true)
         expect(game).to_not receive(:advance_turn)
         game.make_move([:a, 2], [:a, 3])
       end
@@ -437,12 +435,12 @@ describe Game do
 
           game.advance_turn
           game.state.make_move([:e, 7], [:e, 5])
-          game.state.make_move([:d, 8], [:h, 4])
         end
 
-        it "outputs a checkmate message" do
-          expect(STDOUT).to receive(:puts).with("Checkmate!")
-          game.make_move([:a, 2], [:a, 3])
+        it "outputs a checkmate message as part of the state" do
+          game.make_move([:d, 8], [:h, 4])
+          expect(game.state.to_s.split("\n\n").first.strip)
+            .to eq("Checkmate! Black (p2) has won.")
         end
       end
 
@@ -453,15 +451,17 @@ describe Game do
 
           game.advance_turn
           game.state.make_move([:e, 7], [:e, 5])
-          game.state.make_move([:d, 8], [:h, 4])
 
+          allow(game).to receive(:game_over?).and_return(true)
+          allow(game.state).to receive(:game_over?).and_return(true)
           allow(game.state.next_player).to receive(:in_check)
             .and_return(false)
         end
 
-        it "outputs a draw message" do
-          expect(STDOUT).to receive(:puts).with("Draw.")
-          game.make_move([:a, 2], [:a, 3])
+        it "outputs a draw message as part of the state" do
+          game.make_move([:d, 8], [:h, 4])
+          expect(game.state.to_s.split("\n\n").first.strip)
+            .to eq("Draw! Black (p2) and White (p1) have tied.")
         end
       end
     end

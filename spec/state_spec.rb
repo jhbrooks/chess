@@ -1141,5 +1141,26 @@ describe State do
                                     "  2 WPWPWPWPWPWPWPWP\n"\
                                     "  1 WRWNWBWQWKWBWNWR\n\n")
     end
+
+    context "when the game is over" do
+      it "includes a game over message" do
+        true_state.make_move([:f, 2], [:f, 3])
+        true_state.make_move([:e, 7], [:e, 5])
+        true_state.make_move([:g, 2], [:g, 4])
+        true_state.turn += 1
+        true_state.make_move([:d, 8], [:h, 4])
+
+        expect(true_state.to_s).to eq("\nCheckmate! Black (p2) has won.\n\n"\
+                                      "     a b c d e f g h\n"\
+                                      "  8 BRBNBB@@BKBBBNBR\n"\
+                                      "  7 BPBPBPBP@@BPBPBP\n"\
+                                      "  6   @@  @@  @@  @@\n"\
+                                      "  5 @@  @@  BP  @@  \n"\
+                                      "  4   @@  @@  @@WPBQ\n"\
+                                      "  3 @@  @@  @@WP@@  \n"\
+                                      "  2 WPWPWPWPWP@@  WP\n"\
+                                      "  1 WRWNWBWQWKWBWNWR\n\n")
+      end
+    end
   end
 end

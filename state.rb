@@ -300,6 +300,14 @@ class State
   end
 
   def status_string
-    "#{current_player} to play."
+    if game_over?
+      if next_player.in_check
+        "Checkmate! #{current_player} has won."
+      else
+        "Draw! #{current_player} and #{next_player} have tied."
+      end
+    else
+      "#{current_player} to play."
+    end
   end
 end

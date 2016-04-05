@@ -160,16 +160,14 @@ class Game
   end
 
   # Requires state to have the #next_player method.
-  # Requires state to have the #current_player method.
   # Requires state to have the #en_pass_pos method.
   # Requires state to have the #pawn_moved_two method.
   def take_post_move_actions(orig_pos, targ_pos)
     if game_over?
-      state.next_player.in_check ? puts("Checkmate!") : puts("Draw.")
       puts(state)
     else
+      puts "Check." if state.next_player.in_check
       advance_turn
-      puts "Check." if state.current_player.in_check
       adjust_en_pass_pos(orig_pos, targ_pos)
     end
   end
@@ -179,6 +177,8 @@ class Game
     state.turn += 1
   end
 
+  # Requires state to have the #en_pass_pos method.
+  # Requires state to have the #pawn_moved_two method.
   def adjust_en_pass_pos(orig_pos, targ_pos)
     if special_moves.include?(targ_pos)
       state.en_pass_pos = nil
