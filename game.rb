@@ -13,6 +13,7 @@ class Game
     @setup_commands = { "START" => :start_game, "LOAD" => :load_game,
                         "QUIT" => :quit_game }
     @play_commands = { "MOVE" => :determine_and_make_move,
+                       "" => :determine_and_make_move,
                        "SAVE" => :save_game, "QUIT" => :quit_game }
     @special_moves = %w(EP CL CS)
   end
@@ -29,12 +30,13 @@ class Game
   def request_setup_command
     cmd = nil
     until setup_command_valid?(cmd)
-      puts "You can START, LOAD, or QUIT. What would you like to do?"
+      puts "You can START, LOAD, or QUIT."
+      STDOUT.print "What would you like to do? "
       cmd = STDIN.gets.chomp.upcase
       if setup_command_valid?(cmd)
         execute_command(cmd)
       else
-        puts "Invalid command! Please try again.\n\n"
+        STDOUT.print "Invalid command! Please try again.\n\n"
       end
     end
   end
@@ -48,9 +50,9 @@ class Game
   end
 
   def start_game
-    puts "Please input White's name."
+    STDOUT.print "Please input White's name: "
     w_name = STDIN.gets.chomp
-    puts "Please input Black's name."
+    STDOUT.print "Please input Black's name: "
     b_name = STDIN.gets.chomp
     players = [Player.new(w_name, :White), Player.new(b_name, :Black)]
     self.state = State.new(players, 80)
@@ -78,12 +80,13 @@ class Game
   def request_play_command
     cmd = nil
     until play_command_valid?(cmd)
-      puts "You can MOVE, SAVE, or QUIT. What would you like to do?"
+      puts "You can MOVE (hit ENTER), SAVE, or QUIT."
+      STDOUT.print "What would you like to do? "
       cmd = STDIN.gets.chomp.upcase
       if play_command_valid?(cmd)
         execute_command(cmd)
       else
-        puts "Invalid command! Please try again.\n\n"
+        STDOUT.print "Invalid command! Please try again.\n\n"
       end
     end
   end
@@ -103,7 +106,7 @@ class Game
 
   # Requires state to have the #current_player method
   def quit_play
-    puts "Are you sure? Please respond YES or NO."
+    STDOUT.print "Are you sure? Please respond YES or NO. "
     return unless STDIN.gets.chomp.upcase == "YES"
     self.quit_status = true
     puts "\n#{state.current_player} has quit!"
@@ -124,22 +127,24 @@ class Game
   def determine_orig_pos
     orig_pos = [nil, nil]
     until state.valid_orig_pos?(orig_pos)
-      puts "Invalid input! Please try again.\n\n" unless orig_pos == [nil, nil]
-      puts "Input where (e.g. a1) you'd like to move from."
+      puts "Invalid input! Please try again." unless orig_pos == [nil, nil]
+      STDOUT.print "Input where you'd like to move from: "
       orig_pos = STDIN.gets.chomp.downcase.+("  ").split("")
       orig_pos = [orig_pos[0].to_sym, orig_pos[1].to_i]
     end
     orig_pos
   end
 
-  # Require state to have the #valid_targ_pos? method.
+  # Requires state to have the #valid_targ_pos? method.
   def determine_targ_pos(orig_pos)
     targ_pos = [nil, nil]
     until state.valid_targ_pos?(orig_pos, targ_pos)
-      puts "Invalid input! Please try again.\n\n" unless targ_pos == [nil, nil]
-      puts "Input where you'd like to move to (or DROP the piece)."
-      puts "If appropriate, you may also input special moves:"
-      puts "EP to capture en passant, CL to castle long, CS to castle short."
+      puts "Invalid input! Please try again." unless targ_pos == [nil, nil]
+      puts "Input where you'd like to move to, or DROP the piece."
+      puts "  If appropriate, you may also input special moves."
+      STDOUT.print "  (EP for en passant, "\
+                      "CL for castle long, "\
+                      "CS for castle short): "
       targ_pos = STDIN.gets.chomp.downcase.+("  ").split("")
       return false if targ_pos.join("").upcase.include?("DROP")
       if special_moves.include?(targ_pos[0..1].join("").upcase)
@@ -166,7 +171,7 @@ class Game
     if game_over?
       puts(state)
     else
-      puts "Check." if state.next_player.in_check
+      puts "\nCheck." if state.next_player.in_check
       advance_turn
       adjust_en_pass_pos(orig_pos, targ_pos)
     end

@@ -54,6 +54,7 @@ describe Game do
   describe "#play_commands" do
     it "returns the correct collection of commands" do
       expect(game.play_commands).to eq("MOVE" => :determine_and_make_move,
+                                       "" => :determine_and_make_move,
                                        "SAVE" => :save_game,
                                        "QUIT" => :quit_game)
     end
@@ -83,6 +84,7 @@ describe Game do
   describe "#request_setup_command" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("start")
       allow(game).to receive(:start_game)
     end
@@ -182,6 +184,13 @@ describe Game do
       end
     end
 
+    context "when given an empty string" do
+      it "calls #determine_and_make_move" do
+        expect(game).to receive(:determine_and_make_move)
+        game.execute_command("MOVE")
+      end
+    end
+
     context "when given 'SAVE'" do
       it "calls #save_game" do
         expect(game).to receive(:save_game)
@@ -192,7 +201,7 @@ describe Game do
 
   describe "#start_game" do
     before(:each) do
-      allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
     end
 
     it "gets names for White and Black" do
@@ -226,6 +235,7 @@ describe Game do
     context "when called during play (state is not nil)" do
       it "calls #quit_play" do
         allow(STDOUT).to receive(:puts)
+        allow(STDOUT).to receive(:print)
         allow(STDIN).to receive(:gets).and_return("p1", "p2")
         allow(game).to receive(:play)
         game.start_game
@@ -246,6 +256,7 @@ describe Game do
   describe "#quit_play" do
     it "gets confirmation" do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       expect(STDIN).to receive(:gets).and_return("no")
       game.quit_play
     end
@@ -253,6 +264,7 @@ describe Game do
     context "when confirmed" do
       before(:each) do
         allow(STDOUT).to receive(:puts)
+        allow(STDOUT).to receive(:print)
         allow(STDIN).to receive(:gets).and_return("p1", "p2")
         allow(game).to receive(:play)
         game.start_game
@@ -298,6 +310,7 @@ describe Game do
   describe "#determine_orig_pos" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("p1", "p2")
       allow(game).to receive(:play)
       game.start_game
@@ -346,6 +359,7 @@ describe Game do
   describe "#determine_targ_pos" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("p1", "p2")
       allow(game).to receive(:play)
       game.start_game
@@ -410,6 +424,7 @@ describe Game do
   describe "#make_move" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("p1", "p2")
       allow(game).to receive(:play)
       game.start_game
@@ -491,6 +506,7 @@ describe Game do
   describe "#advance_turn" do
     it "increases the Game's state's turn by 1" do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("p1", "p2")
       allow(game).to receive(:play)
       game.start_game
@@ -514,14 +530,16 @@ describe Game do
 
     it "outputs the state" do
       allow(game).to receive(:game_over?).and_return(false, true)
-      expect(STDOUT).to receive(:puts).with(nil)
+      expect(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(game).to receive(:request_play_command)
       game.play
     end
 
     it "requests a play command" do
       allow(game).to receive(:game_over?).and_return(false, true)
-      allow(STDOUT).to receive(:puts).with(nil)
+      allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       expect(game).to receive(:request_play_command)
       game.play
     end
@@ -544,6 +562,7 @@ describe Game do
   describe "#game_over?" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("p1", "p2")
       allow(game).to receive(:play)
       game.start_game
@@ -599,6 +618,7 @@ describe Game do
   describe "#request_play_command" do
     before(:each) do
       allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
       allow(STDIN).to receive(:gets).and_return("move")
       allow(game).to receive(:determine_and_make_move)
     end
@@ -647,6 +667,12 @@ describe Game do
     context "when given 'MOVE'" do
       it "returns true" do
         expect(game.play_command_valid?("MOVE")).to be(true)
+      end
+    end
+
+    context "when given an empty string" do
+      it "returns true" do
+        expect(game.play_command_valid?("")).to be(true)
       end
     end
 
