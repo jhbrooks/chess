@@ -739,6 +739,119 @@ describe Game do
     end
   end
 
+  describe "#promote_pawn" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+
+      game.state.make_move([:d, 2], [:d, 8])
+    end
+
+    it "gets a piece name for promotion" do
+      allow(STDIN).to receive(:gets).and_return("pawn")
+      expect(STDIN).to receive(:gets).and_return("pawn")
+      game.promote_pawn([:d, 8])
+    end
+
+    it "checks to see if the piece name is valid" do
+      allow(STDIN).to receive(:gets).and_return("pawn")
+      expect(game).to receive(:pawn_promotion_valid?).and_return(true)
+      game.promote_pawn([:d, 8])
+    end
+
+    context "when the piece name is valid" do
+      it "does not try again" do
+        allow(STDIN).to receive(:gets).and_return("pawn")
+        expect(STDIN).to receive(:gets).once
+        game.promote_pawn([:d, 8])
+      end
+
+      context "when the promoted pawn is White" do
+        it "creates a piece of the correct color" do
+          allow(STDIN).to receive(:gets).and_return("pawn")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece.player.color)
+            .to be(:White)
+        end
+      end
+      
+      context "when the promoted pawn is Black" do
+        it "creates a piece of the correct color" do
+          game.state.make_move([:c, 8], [:c, 1])
+          game.advance_turn
+          allow(STDIN).to receive(:gets).and_return("pawn")
+          game.promote_pawn([:c, 1])
+          expect(game.state.board.square([:c, 1]).piece.player.color)
+            .to be(:Black)
+        end
+      end
+
+      it "puts the opposing player in check if appropriate" do
+        expect(game.state.next_player.in_check).to be(false)
+
+        allow(STDIN).to receive(:gets).and_return("queen")
+        game.promote_pawn([:d, 8])
+        expect(game.state.next_player.in_check).to be(true)
+      end
+
+      context "with the name bishop" do
+        it "creates a Bishop in the target square" do
+          allow(STDIN).to receive(:gets).and_return("bishop")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece)
+            .to be_an_instance_of(Bishop)
+        end
+      end
+
+      context "with the name knight" do
+        it "creates a Knight in the target square" do
+          allow(STDIN).to receive(:gets).and_return("knight")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece)
+            .to be_an_instance_of(Knight)
+        end
+      end
+
+      context "with the name pawn" do
+        it "creates a Pawn in the target square" do
+          allow(STDIN).to receive(:gets).and_return("pawn")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece)
+            .to be_an_instance_of(Pawn)
+        end
+      end
+
+      context "with the name queen" do
+        it "creates a Queen in the target square" do
+          allow(STDIN).to receive(:gets).and_return("queen")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece)
+            .to be_an_instance_of(Queen)
+        end
+      end
+
+      context "with the name rook" do
+        it "creates a Rook in the target square" do
+          allow(STDIN).to receive(:gets).and_return("rook")
+          game.promote_pawn([:d, 8])
+          expect(game.state.board.square([:d, 8]).piece)
+            .to be_an_instance_of(Rook)
+        end
+      end
+    end
+
+    context "when the origin position is invalid" do
+      it "tries again" do
+        allow(STDIN).to receive(:gets).and_return("king", "pawn")
+        expect(STDIN).to receive(:gets).twice
+        game.promote_pawn([:d, 8])
+      end
+    end
+  end
+
   describe "#reset_game" do
     it "sets the state to nil" do
       game.state = :state

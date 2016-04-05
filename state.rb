@@ -84,14 +84,18 @@ class State
       wcl_path = [[:b, 1], [:c, 1], [:d, 1]]
       if wcl_path.none? { |pos| non_empties.include?(board.square(pos)) }
         unless threatened?([[:c, 1], [:d, 1], [:e, 1]], orig_pos)
-          result << "CL" if board.square([:a, 1]).piece.unmoved
+          if board.square([:a, 1]).piece && board.square([:a, 1]).piece.unmoved
+            result << "CL"
+          end
         end
       end
     else
       bcl_path = [[:b, 8], [:c, 8], [:d, 8]]
       if bcl_path.none? { |pos| non_empties.include?(board.square(pos)) }
         unless threatened?([[:c, 8], [:d, 8], [:e, 8]], orig_pos)
-          result << "CL" if board.square([:a, 8]).piece.unmoved
+          if board.square([:a, 8]).piece && board.square([:a, 8]).piece.unmoved
+            result << "CL"
+          end
         end
       end
     end
@@ -100,14 +104,18 @@ class State
       wcs_path = [[:f, 1], [:g, 1]]
       if wcs_path.none? { |pos| non_empties.include?(board.square(pos)) }
         unless threatened?([[:e, 1], [:f, 1], [:g, 1]], orig_pos)
-          result << "CS" if board.square([:h, 1]).piece.unmoved
+          if board.square([:h, 1]).piece && board.square([:h, 1]).piece.unmoved
+            result << "CS"
+          end
         end
       end
     else
       bcs_path = [[:f, 8], [:g, 8]]
       if bcs_path.none? { |pos| non_empties.include?(board.square(pos)) }
         unless threatened?([[:e, 8], [:f, 8], [:g, 8]], orig_pos)
-          result << "CS" if board.square([:h, 8]).piece.unmoved
+          if board.square([:h, 8]).piece && board.square([:h, 8]).piece.unmoved
+            result << "CS"
+          end
         end
       end
     end
@@ -257,9 +265,21 @@ class State
     over
   end
 
+  def pawn_for_promotion(targ_pos)
+    board.square(targ_pos).piece.is_a?(Pawn) && [1, 8].include?(targ_pos[1])
+  end
+
   def pawn_moved_two(orig_pos, targ_pos)
     difference = (orig_pos[1] - targ_pos[1]).abs
     board.square(targ_pos).piece.is_a?(Pawn) && difference == 2
+  end
+
+  # Requires all players to have the #in_check= method
+  def adjust_check_status(player)
+    enemies = non_empties.select { |s| s.piece.player != player }
+    player.in_check = moves_for_squares(enemies).any? do |moves|
+      moves.include?(king_square(player) && king_square(player).pos)
+    end
   end
 
   def to_s
@@ -281,14 +301,6 @@ class State
   # Requires piece to have the #unmoved= method
   def undo_adjust_unmoved_status(pos)
     board.square(pos).piece.unmoved = true
-  end
-
-  # Requires all players to have the #in_check= method
-  def adjust_check_status(player)
-    enemies = non_empties.select { |s| s.piece.player != player }
-    player.in_check = moves_for_squares(enemies).any? do |moves|
-      moves.include?(king_square(player) && king_square(player).pos)
-    end
   end
 
   def moves_for_squares(sqrs)

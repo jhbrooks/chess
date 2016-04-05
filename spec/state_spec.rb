@@ -280,6 +280,13 @@ describe State do
             expect(true_state.legal_moves([:e, 1]).include?("CL")).to be(false)
           end
         end
+
+        context "with an absent Rook" do
+          it "does not include that special move" do
+            true_state.make_move([:a, 1], [:a, 3])
+            expect(true_state.legal_moves([:e, 1]).include?("CL")).to be(false)
+          end
+        end
       end
 
       context "with a castle short available" do
@@ -313,6 +320,13 @@ describe State do
           it "does not include that special move" do
             true_state.make_move([:h, 1], [:g, 1])
             true_state.make_move([:g, 1], [:h, 1])
+            expect(true_state.legal_moves([:e, 1]).include?("CS")).to be(false)
+          end
+        end
+
+        context "with an absent Rook" do
+          it "does not include that special move" do
+            true_state.make_move([:h, 1], [:h, 3])
             expect(true_state.legal_moves([:e, 1]).include?("CS")).to be(false)
           end
         end
@@ -355,6 +369,13 @@ describe State do
             expect(true_state.legal_moves([:e, 8]).include?("CL")).to be(false)
           end
         end
+
+        context "with an absent Rook" do
+          it "does not include that special move" do
+            true_state.make_move([:a, 8], [:a, 6])
+            expect(true_state.legal_moves([:e, 8]).include?("CL")).to be(false)
+          end
+        end
       end
 
       context "with a castle short available" do
@@ -388,6 +409,13 @@ describe State do
           it "does not include that special move" do
             true_state.make_move([:h, 8], [:g, 8])
             true_state.make_move([:g, 8], [:h, 8])
+            expect(true_state.legal_moves([:e, 8]).include?("CS")).to be(false)
+          end
+        end
+
+        context "with an absent Rook" do
+          it "does not include that special move" do
+            true_state.make_move([:h, 8], [:h, 6])
             expect(true_state.legal_moves([:e, 8]).include?("CS")).to be(false)
           end
         end

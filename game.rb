@@ -1,10 +1,11 @@
 require_relative "./state.rb"
 require_relative "./player.rb"
+require_relative "./piece.rb"
 
 # This class operates Games of chess.
 # Use Game.new.set_up to begin.
 class Game
-  attr_reader :setup_commands, :play_commands, :special_moves
+  attr_reader :setup_commands, :play_commands, :special_moves, :pawn_promotions
   attr_accessor :state, :quit_status
 
   def initialize
@@ -16,6 +17,7 @@ class Game
                        "" => :determine_and_make_move,
                        "SAVE" => :save_game, "QUIT" => :quit_game }
     @special_moves = %w(EP CL CS)
+    @pawn_promotions = %w(Bishop Knight Pawn Queen Rook)
   end
 
   def set_up
@@ -141,7 +143,7 @@ class Game
     until state.valid_targ_pos?(orig_pos, targ_pos)
       puts "Invalid input! Please try again." unless targ_pos == [nil, nil]
       puts "Input where you'd like to move to, or DROP the piece."
-      puts "  If appropriate, you may also input special moves."
+      puts "  If appropriate, you may also input a special move."
       STDOUT.print "  (EP for en passant, "\
                       "CL for castle long, "\
                       "CS for castle short): "
@@ -176,6 +178,10 @@ class Game
       end
     end
 
+    if !special_moves.include?(targ_pos) && state.pawn_for_promotion(targ_pos)
+      promote_pawn(targ_pos)
+    end
+
     if game_over?
       puts(state)
     else
@@ -183,6 +189,31 @@ class Game
       advance_turn
       adjust_en_pass_pos(orig_pos, targ_pos)
     end
+  end
+
+  def promote_pawn(targ_pos)
+    piece = nil
+    puts "\nPawn promotion achieved!"
+    while piece.nil?
+      STDOUT.print "Input the piece you'd like to promote your pawn into: "
+      player = state.board.square(targ_pos).piece.player
+      piece = STDIN.gets.chomp.capitalize
+      if pawn_promotion_valid?(piece)
+        state.board.square(targ_pos).piece = Object.const_get(piece)
+                                                   .create(player)
+        puts "Pawn promoted into a #{piece.downcase}."
+        state.players.each do |player|
+          state.adjust_check_status(player)
+        end
+      else
+        piece = nil
+        puts "Invalid piece! Please try again."
+      end
+    end
+  end
+
+  def pawn_promotion_valid?(piece)
+    pawn_promotions.include?(piece)
   end
 
   # Requires state to have the #turn= method
