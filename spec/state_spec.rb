@@ -3,7 +3,7 @@ require "spec_helper"
 describe State do
   let(:state) { State.new([:p1, :p2], 24) }
   let(:players) { [Player.new(:p1, :White), Player.new(:p2, :Black)] }
-  let(:true_state) { State.new(players, 24) }
+  let(:true_state) { State.new(players, 28) }
 
   describe ".new" do
     context "when given 2 arguments (players, line_w)" do
@@ -1130,16 +1130,17 @@ describe State do
 
   describe "#to_s" do
     it "returns a formatted string representing the State" do
-      expect(true_state.to_s).to eq("\n  White (p1) to play.   \n\n"\
-                                    "     a b c d e f g h\n"\
-                                    "  8 BRBNBBBQBKBBBNBR\n"\
-                                    "  7 BPBPBPBPBPBPBPBP\n"\
-                                    "  6   @@  @@  @@  @@\n"\
-                                    "  5 @@  @@  @@  @@  \n"\
-                                    "  4   @@  @@  @@  @@\n"\
-                                    "  3 @@  @@  @@  @@  \n"\
-                                    "  2 WPWPWPWPWPWPWPWP\n"\
-                                    "  1 WRWNWBWQWKWBWNWR\n\n")
+      expect(true_state.to_s).to eq("\n    White (p1) to play.     \n\n"\
+                                    "   a  b  c  d  e  f  g  h   \n"\
+                                    "8  ♜ █♞█ ♝ █♛█ ♚ █♝█ ♞ █♜█ 8\n"\
+                                    "7 █♟█ ♟ █♟█ ♟ █♟█ ♟ █♟█ ♟  7\n"\
+                                    "6    ███   ███   ███   ███ 6\n"\
+                                    "5 ███   ███   ███   ███    5\n"\
+                                    "4    ███   ███   ███   ███ 4\n"\
+                                    "3 ███   ███   ███   ███    3\n"\
+                                    "2  ♙ █♙█ ♙ █♙█ ♙ █♙█ ♙ █♙█ 2\n"\
+                                    "1 █♖█ ♘ █♗█ ♕ █♔█ ♗ █♘█ ♖  1\n"\
+                                    "   a  b  c  d  e  f  g  h   \n\n")
     end
 
     context "when the game is over" do
@@ -1151,15 +1152,16 @@ describe State do
         true_state.make_move([:d, 8], [:h, 4])
 
         expect(true_state.to_s).to eq("\nCheckmate! Black (p2) has won.\n\n"\
-                                      "     a b c d e f g h\n"\
-                                      "  8 BRBNBB@@BKBBBNBR\n"\
-                                      "  7 BPBPBPBP@@BPBPBP\n"\
-                                      "  6   @@  @@  @@  @@\n"\
-                                      "  5 @@  @@  BP  @@  \n"\
-                                      "  4   @@  @@  @@WPBQ\n"\
-                                      "  3 @@  @@  @@WP@@  \n"\
-                                      "  2 WPWPWPWPWP@@  WP\n"\
-                                      "  1 WRWNWBWQWKWBWNWR\n\n")
+                                      "   a  b  c  d  e  f  g  h   \n"\
+                                      "8  ♜ █♞█ ♝ ███ ♚ █♝█ ♞ █♜█ 8\n"\
+                                      "7 █♟█ ♟ █♟█ ♟ ███ ♟ █♟█ ♟  7\n"\
+                                      "6    ███   ███   ███   ███ 6\n"\
+                                      "5 ███   ███   █♟█   ███    5\n"\
+                                      "4    ███   ███   ███ ♙ █♛█ 4\n"\
+                                      "3 ███   ███   ███ ♙ ███    3\n"\
+                                      "2  ♙ █♙█ ♙ █♙█ ♙ ███   █♙█ 2\n"\
+                                      "1 █♖█ ♘ █♗█ ♕ █♔█ ♗ █♘█ ♖  1\n"\
+                                      "   a  b  c  d  e  f  g  h   \n\n")
       end
     end
   end

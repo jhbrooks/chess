@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Board do
   let(:players) { [Player.new(:p1, :White), Player.new(:p2, :Black)] }
-  let(:board) { Board.new(players, 24) }
+  let(:board) { Board.new(players, 28) }
 
   describe ".new" do
     context "when given 2 arguments (players, line_w)" do
@@ -26,7 +26,7 @@ describe Board do
 
   describe "#line_w" do
     it "returns the correct line width" do
-      expect(board.line_w).to eq(24)
+      expect(board.line_w).to eq(28)
     end
   end
 
@@ -237,15 +237,16 @@ describe Board do
 
   describe "#to_s" do
     it "returns a formatted string representing the Board" do
-      expect(board.to_s).to eq("     a b c d e f g h\n"\
-                               "  8 BRBNBBBQBKBBBNBR\n"\
-                               "  7 BPBPBPBPBPBPBPBP\n"\
-                               "  6   @@  @@  @@  @@\n"\
-                               "  5 @@  @@  @@  @@  \n"\
-                               "  4   @@  @@  @@  @@\n"\
-                               "  3 @@  @@  @@  @@  \n"\
-                               "  2 WPWPWPWPWPWPWPWP\n"\
-                               "  1 WRWNWBWQWKWBWNWR\n\n")
+      expect(board.to_s).to eq("   a  b  c  d  e  f  g  h   \n"\
+                               "8  ♜ █♞█ ♝ █♛█ ♚ █♝█ ♞ █♜█ 8\n"\
+                               "7 █♟█ ♟ █♟█ ♟ █♟█ ♟ █♟█ ♟  7\n"\
+                               "6    ███   ███   ███   ███ 6\n"\
+                               "5 ███   ███   ███   ███    5\n"\
+                               "4    ███   ███   ███   ███ 4\n"\
+                               "3 ███   ███   ███   ███    3\n"\
+                               "2  ♙ █♙█ ♙ █♙█ ♙ █♙█ ♙ █♙█ 2\n"\
+                               "1 █♖█ ♘ █♗█ ♕ █♔█ ♗ █♘█ ♖  1\n"\
+                               "   a  b  c  d  e  f  g  h   \n\n")
     end
   end
 end

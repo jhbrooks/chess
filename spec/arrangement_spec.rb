@@ -119,7 +119,7 @@ describe Row do
   end
 
   let(:player) { Player.new(:p1, :White) }
-  let(:piece) { Piece.new(player, :pawn) }
+  let(:piece) { Pawn.create(player) }
   let(:true_row) do
     Row.new(1, [Square.new(:a, 1, piece), Square.new(:b, 1, piece)], 10)
   end
@@ -173,20 +173,20 @@ describe Row do
   describe "#to_s" do
     context "when the Row is not empty" do
       it "returns a formatted string representing the Row" do
-        expect(true_row.to_s).to eq(" 1 WPWP")
+        expect(true_row.to_s).to eq("1 █♙█ ♙  1")
       end
     end
 
     context "when the Row is empty" do
       context "with an odd rank" do
         it "returns a formatted string leading with a black square" do
-          expect(empty_row1.to_s).to eq(" 1 @@  ")
+          expect(empty_row1.to_s).to eq("1 ███    1")
         end
       end
 
       context "with an even rank" do
         it "returns a formatted string leading with a white square" do
-          expect(empty_row2.to_s).to eq(" 2   @@")
+          expect(empty_row2.to_s).to eq("2    ███ 2")
         end
       end
     end

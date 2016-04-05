@@ -41,8 +41,7 @@ class Row < Arrangement
 
   # Requires all squares to have the #empty? method
   def to_s
-    adjustment = (line_w / 2) + (squares_string.length / 2)
-    "#{rank} #{squares_string}".rjust(adjustment)
+    "#{rank} #{squares_string} #{rank}".center(line_w)
   end
 
   private
@@ -51,18 +50,26 @@ class Row < Arrangement
   def squares_string
     squares.map.with_index do |square, index|
       if square.empty?
-        square_color(index)
+        empty_square_color(index)
       else
-        "#{square}"
+        full_square_color(index, square)
       end
     end.join("")
   end
 
-  def square_color(index)
+  def empty_square_color(index)
     if rank.odd?
-      index.even? ? "@@" : "  "
+      index.even? ? "███" : "   "
     else
-      index.even? ? "  " : "@@"
+      index.even? ? "   " : "███"
+    end
+  end
+
+  def full_square_color(index, square)
+    if rank.odd?
+      index.even? ? "█#{square}█" : " #{square} "
+    else
+      index.even? ? " #{square} " : "█#{square}█"
     end
   end
 end

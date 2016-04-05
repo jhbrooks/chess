@@ -30,9 +30,9 @@ class Board
   end
 
   def to_s
-    adjustment = (line_w / 2) + (label_string.length / 2)
-    f_string = "#{label_string.rjust(adjustment)}\n"
-    f_string << "#{(rows.map(&:to_s).join("\n"))}\n\n"
+    f_string = "#{label_string.center(line_w)}\n"
+    f_string << "#{(rows.map(&:to_s).join("\n"))}\n"
+    f_string << "#{label_string.center(line_w)}\n\n"
   end
 
   private
@@ -177,7 +177,7 @@ class Board
 
   def label_string
     Array.new(8).map.with_index do |_e, i|
-      " #{('a'.ord + i).chr}"
+      " #{('a'.ord + i).chr} "
     end.join("")
   end
 end

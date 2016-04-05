@@ -86,7 +86,7 @@ describe Square do
 
   describe "#to_s" do
     it "returns the Square's piece's mark as a string" do
-      expect(true_square.to_s).to eq("WP")
+      expect(true_square.to_s).to eq("♙")
     end
   end
 end

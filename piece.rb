@@ -24,12 +24,6 @@ class Piece
     @unmoved = true
   end
 
-  # Requires player to have the #mark method
-  def mark
-    type_mark = "#{type}"[0].upcase
-    "#{player.mark}#{type_mark}"
-  end
-
   def move_pattern
   end
 
@@ -48,6 +42,14 @@ class Bishop < Piece
     new(player, :bishop)
   end
 
+  def mark
+    if player.color == :White
+      "♗"
+    else
+      "♝"
+    end
+  end
+
   def move_pattern
     base_adjs = Array.new(7).map.with_index { |_e, i| [i + 1, i + 1] }
     base_adjs.+(base_adjs.map(&:minus_r))
@@ -61,6 +63,14 @@ class King < Piece
     new(player, :king)
   end
 
+  def mark
+    if player.color == :White
+      "♔"
+    else
+      "♚"
+    end
+  end
+
   def move_pattern
     [[1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]]
   end
@@ -72,9 +82,13 @@ class Knight < Piece
     new(player, :knight)
   end
 
+  # Requires player to have #color method
   def mark
-    type_mark = "#{type}"[1].upcase
-    "#{player.mark}#{type_mark}"
+    if player.color == :White
+      "♘"
+    else
+      "♞"
+    end
   end
 
   def move_pattern
@@ -86,6 +100,14 @@ end
 class Pawn < Piece
   def self.create(player)
     new(player, :pawn)
+  end
+
+  def mark
+    if player.color == :White
+      "♙"
+    else
+      "♟"
+    end
   end
 
   # Requires player to have the #color method.
@@ -106,6 +128,14 @@ end
 class Queen < Piece
   def self.create(player)
     new(player, :queen)
+  end
+
+  def mark
+    if player.color == :White
+      "♕"
+    else
+      "♛"
+    end
   end
 
   def move_pattern
@@ -131,6 +161,15 @@ end
 class Rook < Piece
   def self.create(player)
     new(player, :rook)
+  end
+
+  # Requires player to have #color method
+  def mark
+    if player.color == :White
+      "♖"
+    else
+      "♜"
+    end
   end
 
   def move_pattern

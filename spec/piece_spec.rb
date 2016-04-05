@@ -37,12 +37,6 @@ describe Piece do
     end
   end
 
-  describe "#mark" do
-    it "returns a mark representing the Piece" do
-      expect(true_piece.mark).to eq("WP")
-    end
-  end
-
   describe "#to_s" do
     it "returns a formatted string representing the Piece" do
       expect(piece.to_s).to eq("p1 pawn")
@@ -82,7 +76,7 @@ describe Bishop do
 
   describe "#mark" do
     it "returns a mark representing the Bishop" do
-      expect(bishop.mark).to eq("WB")
+      expect(bishop.mark).to eq("♗")
     end
   end
 
@@ -134,7 +128,7 @@ describe King do
 
   describe "#mark" do
     it "returns a mark representing the King" do
-      expect(king.mark).to eq("WK")
+      expect(king.mark).to eq("♔")
     end
   end
 
@@ -199,7 +193,7 @@ describe Knight do
 
   describe "#mark" do
     it "returns a mark representing the Knight" do
-      expect(knight.mark).to eq("WN")
+      expect(knight.mark).to eq("♘")
     end
   end
 
@@ -248,7 +242,7 @@ describe Pawn do
 
   describe "#mark" do
     it "returns a mark representing the Pawn" do
-      expect(pawn.mark).to eq("WP")
+      expect(pawn.mark).to eq("♙")
     end
   end
 
@@ -361,7 +355,7 @@ describe Queen do
 
   describe "#mark" do
     it "returns a mark representing the Queen" do
-      expect(queen.mark).to eq("WQ")
+      expect(queen.mark).to eq("♕")
     end
   end
 
@@ -416,7 +410,7 @@ describe Rook do
 
   describe "#mark" do
     it "returns a mark representing the Rook" do
-      expect(rook.mark).to eq("WR")
+      expect(rook.mark).to eq("♖")
     end
   end
 
