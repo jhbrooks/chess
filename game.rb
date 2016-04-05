@@ -167,7 +167,15 @@ class Game
   # Requires state to have the #next_player method.
   # Requires state to have the #en_pass_pos method.
   # Requires state to have the #pawn_moved_two method.
+  # Requires state to have the #last_orig_piece method.
+  # Requires state to have the #last_targ_piece method.
   def take_post_move_actions(orig_pos, targ_pos)
+    if state.last_targ_piece
+      if state.last_targ_piece.player.color != state.current_player.color
+        puts "\n#{state.last_orig_piece} captures #{state.last_targ_piece}."
+      end
+    end
+
     if game_over?
       puts(state)
     else

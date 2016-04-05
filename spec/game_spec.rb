@@ -430,6 +430,35 @@ describe Game do
       game.start_game
     end
 
+    context "when the move captures an enemy piece" do
+      before(:each) do
+        game.state.make_move([:a, 2], [:a, 4])
+        game.state.make_move([:a, 4], [:a, 5])
+      end
+
+      context "normally" do
+        it "outputs the correct capture message" do
+          game.advance_turn
+          game.make_move([:b, 7], [:b, 6])
+
+          expect(STDOUT).to receive(:puts)
+            .with("\nWhite (p1) pawn captures Black (p2) pawn.")
+          game.make_move([:a, 5], [:b, 6])
+        end
+      end
+
+      context "via en passant" do
+        it "outputs the correct capture message" do
+          game.advance_turn
+          game.make_move([:b, 7], [:b, 5])
+
+          expect(STDOUT).to receive(:puts)
+            .with("\nWhite (p1) pawn captures Black (p2) pawn.")
+          game.make_move([:a, 5], "EP")
+        end
+      end
+    end
+
     context "when the move ends the Game" do
       it "outputs the state" do
         allow(game).to receive(:game_over?).and_return(true)
@@ -499,6 +528,21 @@ describe Game do
       it "adjusts the en passant position" do
         expect(game).to receive(:adjust_en_pass_pos)
         game.make_move([:a, 2], [:a, 3])
+      end
+
+      context "while causing check" do
+        it "outputs a check message" do
+          game.state.make_move([:e, 2], [:e, 3])
+          game.state.make_move([:f, 2], [:f, 3])
+          game.state.make_move([:g, 2], [:g, 4])
+
+          game.advance_turn
+          game.state.make_move([:e, 7], [:e, 5])
+
+          expect(STDOUT).to receive(:puts)
+            .with("\nCheck.")
+          game.make_move([:d, 8], [:h, 4])
+        end
       end
     end
   end

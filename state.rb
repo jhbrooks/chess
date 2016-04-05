@@ -43,7 +43,6 @@ class State
   def legal_moves(orig_pos)
     state_legal_moves = []
     board_and_special_moves(orig_pos).each do |move|
-      store_move(orig_pos, move)
       make_move(orig_pos, move)
       state_legal_moves << move unless current_player.in_check
       undo_move(orig_pos, move)
@@ -128,6 +127,7 @@ class State
 
   # Requires all players to have the #in_check= method
   def make_move(orig_pos, targ_pos)
+    store_move(orig_pos, targ_pos)
     adjust_unmoved_status(orig_pos)
     if special_moves.include?(targ_pos)
       make_special_move(orig_pos, targ_pos)
