@@ -4,7 +4,7 @@ require_relative "./player.rb"
 # This class operates Games of chess.
 # Use Game.new.set_up to begin.
 class Game
-  attr_reader :setup_commands, :play_commands
+  attr_reader :setup_commands, :play_commands, :special_moves
   attr_accessor :state, :quit_status
 
   def initialize
@@ -14,6 +14,7 @@ class Game
                         "QUIT" => :quit_game }
     @play_commands = { "MOVE" => :determine_and_make_move,
                        "SAVE" => :save_game, "QUIT" => :quit_game }
+    @special_moves = %w(EP CL CS)
   end
 
   def set_up
@@ -137,9 +138,15 @@ class Game
     until state.valid_targ_pos?(orig_pos, targ_pos)
       puts "Invalid input! Please try again.\n\n" unless targ_pos == [nil, nil]
       puts "Input where you'd like to move to (or DROP the piece)."
+      puts "If appropriate, you may also input special moves:"
+      puts "EP to capture en passant, CL to castle long, CS to castle short."
       targ_pos = STDIN.gets.chomp.downcase.+("  ").split("")
       return false if targ_pos.join("").upcase.include?("DROP")
-      targ_pos = [targ_pos[0].to_sym, targ_pos[1].to_i]
+      if special_moves.include?(targ_pos[0..1].join("").upcase)
+        targ_pos = targ_pos[0..1].join("").upcase
+      else
+        targ_pos = [targ_pos[0].to_sym, targ_pos[1].to_i]
+      end
     end
     targ_pos
   end
@@ -173,6 +180,11 @@ class Game
   end
 
   def adjust_en_pass_pos(orig_pos, targ_pos)
+    if special_moves.include?(targ_pos)
+      state.en_pass_pos = nil
+      return
+    end
+
     if state.pawn_moved_two(orig_pos, targ_pos)
       state.en_pass_pos = targ_pos
     else
