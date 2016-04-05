@@ -106,7 +106,7 @@ class Game
 
   # Requires state to have the #current_player method
   def quit_play
-    STDOUT.print "Are you sure? Please respond YES or NO. "
+    STDOUT.print "Are you sure? Please respond YES or NO: "
     return unless STDIN.gets.chomp.upcase == "YES"
     self.quit_status = true
     puts "\n#{state.current_player} has quit!"
