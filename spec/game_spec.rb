@@ -865,4 +865,150 @@ describe Game do
       expect(game.quit_status).to be(nil)
     end
   end
+
+  describe "#save_game" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2")
+      allow(game).to receive(:play)
+      game.start_game
+
+      game.make_move([:d, 2], [:d, 4])
+    end
+
+    it "gets a filename" do
+      allow(STDIN).to receive(:gets).and_return("test.yml")
+      expect(STDIN).to receive(:gets).and_return("test.yml")
+      game.save_game
+    end
+
+    it "checks to see if the named save file exists" do
+      allow(STDIN).to receive(:gets).and_return("test.yml", "yes")
+      expect(File).to receive(:exist?).and_return(true)
+      game.save_game
+    end
+
+    context "when the save file does not exist" do
+      it "does not try again" do
+        allow(STDIN).to receive(:gets).and_return("test_1.yml")
+        expect(STDIN).to receive(:gets).once
+        game.save_game
+      end
+
+      it "saves the game" do
+        allow(STDIN).to receive(:gets).and_return("test_2.yml")
+        game.save_game
+        expect(File.exist?("saves/test_2.yml")).to be(true)
+      end
+    end
+
+    context "when the save file exists" do
+      context "when receiving 'YES' for confirmation" do
+        it "does not try again" do
+          allow(STDIN).to receive(:gets).and_return("test.yml", "yes")
+          expect(STDIN).to receive(:gets).twice
+          game.save_game
+        end
+
+        it "saves the game" do
+          pre_save_time = File.new("saves/test.yml").mtime
+          allow(STDIN).to receive(:gets).and_return("test.yml", "yes")
+          game.save_game
+          post_save_time = File.new("saves/test.yml").mtime
+          expect(post_save_time).to be >= pre_save_time
+        end
+      end
+
+      context "when receiving 'NO' for confirmation" do
+        it "tries again" do
+          allow(STDIN)
+            .to receive(:gets).and_return("test.yml", "no", "test_3.yml")
+          expect(STDIN).to receive(:gets).exactly(3).times
+          game.save_game
+        end
+      end
+    end
+
+    after(:all) do
+      File.delete("saves/test.yml", "saves/test_1.yml",
+                  "saves/test_2.yml", "saves/test_3.yml")
+    end
+  end
+
+  describe "#load_game" do
+    before(:each) do
+      allow(STDOUT).to receive(:puts)
+      allow(STDOUT).to receive(:print)
+      allow(STDIN).to receive(:gets).and_return("p1", "p2", "test.yml", "yes")
+      allow(game).to receive(:play)
+      game.start_game
+
+      game.make_move([:d, 2], [:d, 4])
+      game.save_game
+    end
+
+    it "gets a filename" do
+      allow(STDIN).to receive(:gets).and_return("test.yml")
+      expect(STDIN).to receive(:gets).and_return("test.yml")
+      game.load_game
+    end
+
+    it "checks to see if the named save file exists" do
+      allow(STDIN).to receive(:gets).and_return("test.yml")
+      expect(File).to receive(:exist?).and_return(true)
+      game.load_game
+    end
+
+    context "when the save file does not exist" do
+      it "tries again" do
+        allow(STDIN).to receive(:gets).and_return("test_1.yml", "test.yml")
+        expect(STDIN).to receive(:gets).twice
+        game.load_game
+      end
+    end
+
+    context "when the save file exists" do
+      it "does not try again" do
+        allow(STDIN).to receive(:gets).and_return("test.yml")
+        expect(STDIN).to receive(:gets).once
+        game.load_game
+      end
+
+      it "loads the game" do
+        game.make_move([:d, 4], [:d, 5])
+        expect(game.state.board.square([:d, 4]).piece).to be(nil)
+
+        allow(STDIN).to receive(:gets).and_return("test.yml")
+        game.load_game
+        expect(game.state.board.square([:d, 4]).piece)
+          .to be_an_instance_of(Pawn)
+      end
+
+      it "starts play" do
+        allow(STDIN).to receive(:gets).and_return("test.yml")
+        expect(game).to receive(:play)
+        game.load_game
+      end
+    end
+
+    context "when given the CANCEL command" do
+      it "does not try again" do
+        allow(STDIN).to receive(:gets).and_return("cancel")
+        allow(game).to receive(:set_up)
+        expect(STDIN).to receive(:gets).once
+        game.load_game
+      end
+
+      it "starts set_up" do
+        allow(STDIN).to receive(:gets).and_return("cancel")
+        expect(game).to receive(:set_up)
+        game.load_game
+      end
+    end
+
+    after(:all) do
+      File.delete("saves/test.yml")
+    end
+  end
 end

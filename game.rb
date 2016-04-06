@@ -1,10 +1,13 @@
 require_relative "./state.rb"
 require_relative "./player.rb"
 require_relative "./piece.rb"
+require 'yaml'
 
 # This class operates Games of chess.
 # Use Game.new.set_up to begin.
 class Game
+
+
   attr_reader :setup_commands, :play_commands, :special_moves, :pawn_promotions
   attr_accessor :state, :quit_status
 
@@ -59,11 +62,6 @@ class Game
     players = [Player.new(w_name, :White), Player.new(b_name, :Black)]
     self.state = State.new(players, 80)
     play
-  end
-
-  # The following method is not yet implemented
-  def load_game
-    false
   end
 
   def play
@@ -241,8 +239,56 @@ class Game
     self.quit_status = nil
   end
 
-  # The following method is not yet implemented
   def save_game
-    false
+    game_saved = false
+    until game_saved
+      STDOUT.print "Please name your save: "
+      filename = STDIN.gets.chomp
+      if !File.exist?("saves/#{filename}")
+        File.open("saves/#{filename}", "w") do |f|
+          f.puts(YAML.dump(state))
+        end
+        puts "Game saved."
+        game_saved = true
+      else
+        response = nil
+        until response == "YES" || response == "NO"
+          STDOUT.print "Overwrite existing file? Please respond YES or NO: "
+          response = STDIN.gets.chomp.upcase
+        end
+        if response == "YES"
+          File.open("saves/#{filename}", "w") do |f|
+            f.write(YAML.dump(state))
+          end
+          puts "File overwritten. Game saved."
+          game_saved = true
+        else
+          puts "File not overwritten. Trying again."
+        end
+      end
+    end
+  end
+
+  def load_game
+    game_loaded = false
+    load_canceled = false
+    until game_loaded || load_canceled
+      STDOUT.print "Please input the name of your save (or input CANCEL): "
+      filename = STDIN.gets.chomp
+      if File.exist?("saves/#{filename}")
+        File.open("saves/#{filename}", "r") do |f|
+          self.state = YAML.load(f.read)
+        end
+        puts "Game loaded. Restarting play."
+        game_loaded = true
+        play
+      elsif filename.upcase == "CANCEL"
+        puts "Load canceled. Returning to setup."
+        load_canceled = true
+        set_up
+      else
+        puts "Load failed (no save with that name found). Trying again."
+      end
+    end
   end
 end
