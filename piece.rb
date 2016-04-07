@@ -15,12 +15,11 @@ end
 
 # This class handles Pieces in a game of chess
 class Piece
-  attr_reader :player, :type
+  attr_reader :player
   attr_accessor :unmoved
 
-  def initialize(player, type)
+  def initialize(player)
     @player = player
-    @type = type
     @unmoved = true
   end
 
@@ -32,16 +31,14 @@ class Piece
   end
 
   def to_s
-    "#{player} #{type}"
+    "#{player} #{self.class.to_s.downcase}"
   end
 end
 
 # This class handles Bishops
 class Bishop < Piece
-  def self.create(player)
-    new(player, :bishop)
-  end
-
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def mark
     if player.color == :White
       "♗"
@@ -59,11 +56,9 @@ end
 
 # This class handles Kings
 class King < Piece
-  def self.create(player)
-    new(player, :king)
-  end
-
   def mark
+    # Requires player to have the #color method
+    # Expects player colors to be :White and :Black
     if player.color == :White
       "♔"
     else
@@ -78,11 +73,8 @@ end
 
 # This class handles Knights
 class Knight < Piece
-  def self.create(player)
-    new(player, :knight)
-  end
-
-  # Requires player to have #color method
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def mark
     if player.color == :White
       "♘"
@@ -98,10 +90,8 @@ end
 
 # This class handles Pawns
 class Pawn < Piece
-  def self.create(player)
-    new(player, :pawn)
-  end
-
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def mark
     if player.color == :White
       "♙"
@@ -110,15 +100,15 @@ class Pawn < Piece
     end
   end
 
-  # Requires player to have the #color method.
-  # Requires color to be capitalized.
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def move_pattern
     return player.color == :White ? [[0, 1]] : [[0, -1]] unless unmoved
     player.color == :White ? [[0, 1], [0, 2]] : [[0, -1], [0, -2]]
   end
 
   # Requires player to have the #color method.
-  # Requires color to be capitalized.
+  # Expects player colors to be :White and :Black
   def capture_pattern
     player.color == :White ? [[1, 1], [-1, 1]] : [[1, -1], [-1, -1]]
   end
@@ -126,10 +116,8 @@ end
 
 # This class handles Queens
 class Queen < Piece
-  def self.create(player)
-    new(player, :queen)
-  end
-
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def mark
     if player.color == :White
       "♕"
@@ -159,11 +147,8 @@ end
 
 # This class handles Rooks
 class Rook < Piece
-  def self.create(player)
-    new(player, :rook)
-  end
-
-  # Requires player to have #color method
+  # Requires player to have the #color method
+  # Expects player colors to be :White and :Black
   def mark
     if player.color == :White
       "♖"

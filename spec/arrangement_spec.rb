@@ -119,7 +119,7 @@ describe Row do
   end
 
   let(:player) { Player.new(:p1, :White) }
-  let(:piece) { Pawn.create(player) }
+  let(:piece) { Pawn.new(player) }
   let(:true_row) do
     Row.new(1, [Square.new(:a, 1, piece), Square.new(:b, 1, piece)], 10)
   end

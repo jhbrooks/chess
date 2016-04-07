@@ -1118,12 +1118,46 @@ describe State do
     end
   end
 
-  describe "#pawn_moved_two" do
+  describe "#pawn_for_promotion?" do
+    context "when given a target position with rank 1 or 8" do
+      context "with a Pawn in the target position square" do
+        it "returns true" do
+          true_state.make_move([:a, 7], [:a, 1])
+          expect(true_state.pawn_for_promotion?([:a, 1])).to be(true)
+        end
+      end
+
+      context "with some other piece in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 8], [:a, 1])
+          expect(true_state.pawn_for_promotion?([:a, 1])).to be(false)
+        end
+      end
+    end
+
+    context "when given a target position with rank neither 1 nor 8" do
+      context "with a Pawn in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 7], [:a, 2])
+          expect(true_state.pawn_for_promotion?([:a, 2])).to be(false)
+        end
+      end
+
+      context "with some other piece in the target position square" do
+        it "returns false" do
+          true_state.make_move([:a, 8], [:a, 2])
+          expect(true_state.pawn_for_promotion?([:a, 2])).to be(false)
+        end
+      end
+    end
+  end
+
+  describe "#pawn_moved_two?" do
     context "when given origin and target positions 2 apart" do
       context "with a Pawn in the target position square" do
         it "returns true" do
           true_state.make_move([:a, 2], [:a, 4])
-          expect(true_state.pawn_moved_two([:a, 2], [:a, 4])).to be(true)
+          expect(true_state.pawn_moved_two?([:a, 2], [:a, 4])).to be(true)
         end
       end
 
@@ -1133,7 +1167,7 @@ describe State do
           true_state.make_move([:a, 4], [:a, 5])
           true_state.make_move([:a, 1], [:a, 2])
           true_state.make_move([:a, 2], [:a, 4])
-          expect(true_state.pawn_moved_two([:a, 2], [:a, 4])).to be(false)
+          expect(true_state.pawn_moved_two?([:a, 2], [:a, 4])).to be(false)
         end
       end
     end
@@ -1142,7 +1176,7 @@ describe State do
       context "with a Pawn in the target position square" do
         it "returns false" do
           true_state.make_move([:a, 2], [:a, 3])
-          expect(true_state.pawn_moved_two([:a, 2], [:a, 3])).to be(false)
+          expect(true_state.pawn_moved_two?([:a, 2], [:a, 3])).to be(false)
         end
       end
 
@@ -1150,7 +1184,7 @@ describe State do
         it "returns false" do
           true_state.make_move([:a, 2], [:a, 4])
           true_state.make_move([:a, 1], [:a, 2])
-          expect(true_state.pawn_moved_two([:a, 2], [:a, 3])).to be(false)
+          expect(true_state.pawn_moved_two?([:a, 2], [:a, 3])).to be(false)
         end
       end
     end

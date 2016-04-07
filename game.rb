@@ -1,13 +1,11 @@
 require_relative "./state.rb"
 require_relative "./player.rb"
 require_relative "./piece.rb"
-require 'yaml'
+require "yaml"
 
 # This class operates Games of chess.
 # Use Game.new.set_up to begin.
 class Game
-
-
   attr_reader :setup_commands, :play_commands, :special_moves, :pawn_promotions
   attr_accessor :state, :quit_status
 
@@ -166,17 +164,16 @@ class Game
 
   # Requires state to have the #next_player method.
   # Requires state to have the #en_pass_pos method.
-  # Requires state to have the #pawn_moved_two method.
+  # Requires state to have the #pawn_moved_two? method.
+  # Requires state to have the #pawn_for_promotion? method.
   # Requires state to have the #last_orig_piece method.
   # Requires state to have the #last_targ_piece method.
   def take_post_move_actions(orig_pos, targ_pos)
-    if state.last_targ_piece
-      if state.last_targ_piece.player.color != state.current_player.color
-        puts "\n#{state.last_orig_piece} captures #{state.last_targ_piece}."
-      end
+    if state.last_targ_piece && capture_occurred?
+      puts "\n#{state.last_orig_piece} captures #{state.last_targ_piece}."
     end
 
-    if !special_moves.include?(targ_pos) && state.pawn_for_promotion(targ_pos)
+    if !special_moves.include?(targ_pos) && state.pawn_for_promotion?(targ_pos)
       promote_pawn(targ_pos)
     end
 
@@ -189,16 +186,20 @@ class Game
     end
   end
 
+  def capture_occurred?
+    state.last_targ_piece.player.color != state.current_player.color
+  end
+
   def promote_pawn(targ_pos)
     piece = nil
     puts "\nPawn promotion achieved!"
     while piece.nil?
       STDOUT.print "Input the piece you'd like to promote your pawn into: "
-      player = state.board.square(targ_pos).piece.player
+      promoted_player = state.board.square(targ_pos).piece.player
       piece = STDIN.gets.chomp.capitalize
       if pawn_promotion_valid?(piece)
         state.board.square(targ_pos).piece = Object.const_get(piece)
-                                                   .create(player)
+                                                   .new(promoted_player)
         puts "Pawn promoted into a #{piece.downcase}."
         state.players.each do |player|
           state.adjust_check_status(player)
@@ -220,14 +221,14 @@ class Game
   end
 
   # Requires state to have the #en_pass_pos method.
-  # Requires state to have the #pawn_moved_two method.
+  # Requires state to have the #pawn_moved_two? method.
   def adjust_en_pass_pos(orig_pos, targ_pos)
     if special_moves.include?(targ_pos)
       state.en_pass_pos = nil
       return
     end
 
-    if state.pawn_moved_two(orig_pos, targ_pos)
+    if state.pawn_moved_two?(orig_pos, targ_pos)
       state.en_pass_pos = targ_pos
     else
       state.en_pass_pos = nil
@@ -251,12 +252,8 @@ class Game
         puts "Game saved."
         game_saved = true
       else
-        response = nil
-        until response == "YES" || response == "NO"
-          STDOUT.print "Overwrite existing file? Please respond YES or NO: "
-          response = STDIN.gets.chomp.upcase
-        end
-        if response == "YES"
+        STDOUT.print "Overwrite existing file? Please respond YES or NO: "
+        if STDIN.gets.chomp.upcase == "YES"
           File.open("saves/#{filename}", "w") do |f|
             f.write(YAML.dump(state))
           end

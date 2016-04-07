@@ -26,7 +26,7 @@ class Board
   end
 
   def legal_moves(orig_pos)
-    winnowed_moves(orig_pos) + winnowed_captures(orig_pos)
+    valid_moves(orig_pos) + valid_captures(orig_pos)
   end
 
   def to_s
@@ -57,7 +57,7 @@ class Board
   def create_black_pawns(player)
     Array.new(8).map.with_index do |_e, i|
       file = ("a".ord + i).chr.to_sym
-      Square.new(file, 7, Pawn.create(player))
+      Square.new(file, 7, Pawn.new(player))
     end
   end
 
@@ -79,7 +79,7 @@ class Board
   def create_white_pawns(player)
     Array.new(8).map.with_index do |_e, i|
       file = ("a".ord + i).chr.to_sym
-      Square.new(file, 2, Pawn.create(player))
+      Square.new(file, 2, Pawn.new(player))
     end
   end
 
@@ -91,10 +91,10 @@ class Board
   end
 
   def special_pieces(player)
-    [Rook.create(player), Knight.create(player),
-     Bishop.create(player), Queen.create(player),
-     King.create(player), Bishop.create(player),
-     Knight.create(player), Rook.create(player)]
+    [Rook.new(player), Knight.new(player),
+     Bishop.new(player), Queen.new(player),
+     King.new(player), Bishop.new(player),
+     Knight.new(player), Rook.new(player)]
   end
 
   def create_rows
@@ -131,7 +131,7 @@ class Board
     end
   end
 
-  def winnowed_moves(orig_pos)
+  def valid_moves(orig_pos)
     origin = square(orig_pos)
     onboard_moves = origin.potential_moves.select do |m|
       squares.map(&:file).include?(m[0]) && squares.map(&:rank).include?(m[1])
@@ -141,14 +141,14 @@ class Board
     reject_invalid_moves(base_valids, origin)
   end
 
+  def select_empties(moves)
+    moves.select { |move| square(move).empty? }
+  end
+
   def reject_invalid_moves(base_valids, origin)
     row_valids = reject_blocked_moves(rows, base_valids, origin)
     row_col_valids = reject_blocked_moves(cols, row_valids, origin)
     reject_blocked_moves(diags, row_col_valids, origin)
-  end
-
-  def select_empties(moves)
-    moves.select { |move| square(move).empty? }
   end
 
   def reject_blocked_moves(arrangement_array, moves, origin)
@@ -159,7 +159,7 @@ class Board
     moves
   end
 
-  def winnowed_captures(orig_pos)
+  def valid_captures(orig_pos)
     origin = square(orig_pos)
     onboard_captures = origin.potential_captures.select do |c|
       squares.map(&:file).include?(c[0]) && squares.map(&:rank).include?(c[1])

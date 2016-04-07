@@ -777,7 +777,7 @@ describe Game do
             .to be(:White)
         end
       end
-      
+
       context "when the promoted pawn is Black" do
         it "creates a piece of the correct color" do
           game.state.make_move([:c, 8], [:c, 1])
@@ -798,7 +798,7 @@ describe Game do
       end
 
       context "with the name bishop" do
-        it "creates a Bishop in the target square" do
+        it "creates a Bishop in the target position square" do
           allow(STDIN).to receive(:gets).and_return("bishop")
           game.promote_pawn([:d, 8])
           expect(game.state.board.square([:d, 8]).piece)
@@ -807,7 +807,7 @@ describe Game do
       end
 
       context "with the name knight" do
-        it "creates a Knight in the target square" do
+        it "creates a Knight in the target position square" do
           allow(STDIN).to receive(:gets).and_return("knight")
           game.promote_pawn([:d, 8])
           expect(game.state.board.square([:d, 8]).piece)
@@ -816,7 +816,7 @@ describe Game do
       end
 
       context "with the name pawn" do
-        it "creates a Pawn in the target square" do
+        it "creates a Pawn in the target position square" do
           allow(STDIN).to receive(:gets).and_return("pawn")
           game.promote_pawn([:d, 8])
           expect(game.state.board.square([:d, 8]).piece)
@@ -825,7 +825,7 @@ describe Game do
       end
 
       context "with the name queen" do
-        it "creates a Queen in the target square" do
+        it "creates a Queen in the target position square" do
           allow(STDIN).to receive(:gets).and_return("queen")
           game.promote_pawn([:d, 8])
           expect(game.state.board.square([:d, 8]).piece)
@@ -834,7 +834,7 @@ describe Game do
       end
 
       context "with the name rook" do
-        it "creates a Rook in the target square" do
+        it "creates a Rook in the target position square" do
           allow(STDIN).to receive(:gets).and_return("rook")
           game.promote_pawn([:d, 8])
           expect(game.state.board.square([:d, 8]).piece)
@@ -843,7 +843,7 @@ describe Game do
       end
     end
 
-    context "when the origin position is invalid" do
+    context "when the piece name is invalid" do
       it "tries again" do
         allow(STDIN).to receive(:gets).and_return("king", "pawn")
         expect(STDIN).to receive(:gets).twice
@@ -889,7 +889,7 @@ describe Game do
       game.save_game
     end
 
-    context "when the save file does not exist" do
+    context "when the named save file does not exist" do
       it "does not try again" do
         allow(STDIN).to receive(:gets).and_return("test_1.yml")
         expect(STDIN).to receive(:gets).once
@@ -903,8 +903,14 @@ describe Game do
       end
     end
 
-    context "when the save file exists" do
-      context "when receiving 'YES' for confirmation" do
+    context "when the named save file exists" do
+      it "gets confirmation" do
+        allow(STDIN).to receive(:gets).and_return("test.yml", "yes")
+        expect(STDIN).to receive(:gets).twice
+        game.save_game
+      end
+
+      context "when confirmed" do
         it "does not try again" do
           allow(STDIN).to receive(:gets).and_return("test.yml", "yes")
           expect(STDIN).to receive(:gets).twice
@@ -920,7 +926,7 @@ describe Game do
         end
       end
 
-      context "when receiving 'NO' for confirmation" do
+      context "when not confirmation" do
         it "tries again" do
           allow(STDIN)
             .to receive(:gets).and_return("test.yml", "no", "test_3.yml")
@@ -960,7 +966,7 @@ describe Game do
       game.load_game
     end
 
-    context "when the save file does not exist" do
+    context "when the named save file does not exist" do
       it "tries again" do
         allow(STDIN).to receive(:gets).and_return("test_1.yml", "test.yml")
         expect(STDIN).to receive(:gets).twice
@@ -968,7 +974,7 @@ describe Game do
       end
     end
 
-    context "when the save file exists" do
+    context "when the named save file exists" do
       it "does not try again" do
         allow(STDIN).to receive(:gets).and_return("test.yml")
         expect(STDIN).to receive(:gets).once
@@ -992,7 +998,7 @@ describe Game do
       end
     end
 
-    context "when given the CANCEL command" do
+    context "when given the command 'CANCEL'" do
       it "does not try again" do
         allow(STDIN).to receive(:gets).and_return("cancel")
         allow(game).to receive(:set_up)
@@ -1000,7 +1006,7 @@ describe Game do
         game.load_game
       end
 
-      it "starts set_up" do
+      it "starts setup" do
         allow(STDIN).to receive(:gets).and_return("cancel")
         expect(game).to receive(:set_up)
         game.load_game

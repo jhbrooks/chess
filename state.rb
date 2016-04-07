@@ -77,60 +77,59 @@ class State
 
   def legal_castles(orig_pos)
     return [] unless board.square(orig_pos).piece.unmoved
-
-    result = []
-
-    if board.square(orig_pos).piece.player.color == :White
-      wcl_path = [[:b, 1], [:c, 1], [:d, 1]]
-      if wcl_path.none? { |pos| non_empties.include?(board.square(pos)) }
-        unless threatened?([[:c, 1], [:d, 1], [:e, 1]], orig_pos)
-          if board.square([:a, 1]).piece && board.square([:a, 1]).piece.unmoved
-            result << "CL"
-          end
-        end
-      end
-    else
-      bcl_path = [[:b, 8], [:c, 8], [:d, 8]]
-      if bcl_path.none? { |pos| non_empties.include?(board.square(pos)) }
-        unless threatened?([[:c, 8], [:d, 8], [:e, 8]], orig_pos)
-          if board.square([:a, 8]).piece && board.square([:a, 8]).piece.unmoved
-            result << "CL"
-          end
-        end
-      end
-    end
-
-    if board.square(orig_pos).piece.player.color == :White
-      wcs_path = [[:f, 1], [:g, 1]]
-      if wcs_path.none? { |pos| non_empties.include?(board.square(pos)) }
-        unless threatened?([[:e, 1], [:f, 1], [:g, 1]], orig_pos)
-          if board.square([:h, 1]).piece && board.square([:h, 1]).piece.unmoved
-            result << "CS"
-          end
-        end
-      end
-    else
-      bcs_path = [[:f, 8], [:g, 8]]
-      if bcs_path.none? { |pos| non_empties.include?(board.square(pos)) }
-        unless threatened?([[:e, 8], [:f, 8], [:g, 8]], orig_pos)
-          if board.square([:h, 8]).piece && board.square([:h, 8]).piece.unmoved
-            result << "CS"
-          end
-        end
-      end
-    end
-
-    result
+    legal_castle_longs(board.square(orig_pos).piece.player)
+      .+(legal_castle_shorts(board.square(orig_pos).piece.player))
   end
 
-  def threatened?(move_path, orig_pos)
-    player = board.square(orig_pos).piece.player
+  def legal_castle_longs(player)
+    if player.color == :White && path_clear?([[:b, 1], [:c, 1], [:d, 1]])
+      unless threatened?([[:c, 1], [:d, 1], [:e, 1]], player)
+        if valid_rook?(board.square([:a, 1]).piece, player)
+          return ["CL"]
+        end
+      end
+    elsif player.color == :Black && path_clear?([[:b, 8], [:c, 8], [:d, 8]])
+      unless threatened?([[:c, 8], [:d, 8], [:e, 8]], player)
+        if valid_rook?(board.square([:a, 8]).piece, player)
+          return ["CL"]
+        end
+      end
+    end
+    []
+  end
+
+  def legal_castle_shorts(player)
+    if player.color == :White && path_clear?([[:f, 1], [:g, 1]])
+      unless threatened?([[:e, 1], [:f, 1], [:g, 1]], player)
+        if valid_rook?(board.square([:h, 1]).piece, player)
+          return ["CS"]
+        end
+      end
+    elsif player.color == :Black && path_clear?([[:f, 8], [:g, 8]])
+      unless threatened?([[:e, 8], [:f, 8], [:g, 8]], player)
+        if valid_rook?(board.square([:h, 8]).piece, player)
+          return ["CS"]
+        end
+      end
+    end
+    []
+  end
+
+  def path_clear?(move_path)
+    move_path.none? { |pos| non_empties.include?(board.square(pos)) }
+  end
+
+  def threatened?(move_path, player)
     enemies = non_empties.select { |s| s.piece.player != player }
     move_path.any? do |move|
       moves_for_squares(enemies).any? do |moves|
         moves.include?(move)
       end
     end
+  end
+
+  def valid_rook?(piece, player)
+    piece && piece.is_a?(Rook) && piece.unmoved && piece.player == player
   end
 
   # Requires all players to have the #in_check= method
@@ -148,30 +147,43 @@ class State
   end
 
   def make_special_move(orig_pos, targ_pos)
+    origin_color = board.square(orig_pos).piece.player.color
     if targ_pos == "EP"
-      adj = board.square(orig_pos).piece.player.color == :White ? 1 : (-1)
-      board.make_move(orig_pos, [en_pass_pos[0], en_pass_pos[1] + adj])
-      board.square(en_pass_pos).piece = nil
+      make_en_passant(orig_pos, origin_color)
     elsif targ_pos == "CL"
-      if board.square(orig_pos).piece.player.color == :White
-        board.make_move([:e, 1], [:c, 1])
-        adjust_unmoved_status([:a, 1])
-        board.make_move([:a, 1], [:d, 1])
-      else
-        board.make_move([:e, 8], [:c, 8])
-        adjust_unmoved_status([:a, 8])
-        board.make_move([:a, 8], [:d, 8])
-      end
+      make_castle_long(origin_color)
     else
-      if board.square(orig_pos).piece.player.color == :White
-        board.make_move([:e, 1], [:g, 1])
-        adjust_unmoved_status([:h, 1])
-        board.make_move([:h, 1], [:f, 1])
-      else
-        board.make_move([:e, 8], [:g, 8])
-        adjust_unmoved_status([:h, 8])
-        board.make_move([:h, 8], [:f, 8])
-      end
+      make_castle_short(origin_color)
+    end
+  end
+
+  def make_en_passant(orig_pos, origin_color)
+    adj = origin_color == :White ? 1 : (-1)
+    board.make_move(orig_pos, [en_pass_pos[0], en_pass_pos[1] + adj])
+    board.square(en_pass_pos).piece = nil
+  end
+
+  def make_castle_long(origin_color)
+    if origin_color == :White
+      board.make_move([:e, 1], [:c, 1])
+      adjust_unmoved_status([:a, 1])
+      board.make_move([:a, 1], [:d, 1])
+    else
+      board.make_move([:e, 8], [:c, 8])
+      adjust_unmoved_status([:a, 8])
+      board.make_move([:a, 8], [:d, 8])
+    end
+  end
+
+  def make_castle_short(origin_color)
+    if origin_color == :White
+      board.make_move([:e, 1], [:g, 1])
+      adjust_unmoved_status([:h, 1])
+      board.make_move([:h, 1], [:f, 1])
+    else
+      board.make_move([:e, 8], [:g, 8])
+      adjust_unmoved_status([:h, 8])
+      board.make_move([:h, 8], [:f, 8])
     end
   end
 
@@ -187,20 +199,33 @@ class State
   end
 
   def store_special_move(orig_pos, targ_pos)
+    origin_color = board.square(orig_pos).piece.player.color
     if targ_pos == "EP"
-      self.last_targ_piece = board.square(en_pass_pos).piece
+      store_en_passant
     elsif targ_pos == "CL"
-      if board.square(orig_pos).piece.player.color == :White
-        self.last_targ_piece = board.square([:a, 1]).piece
-      else
-        self.last_targ_piece = board.square([:a, 8]).piece
-      end
+      store_castle_long(origin_color)
     else
-      if board.square(orig_pos).piece.player.color == :White
-        self.last_targ_piece = board.square([:h, 1]).piece
-      else
-        self.last_targ_piece = board.square([:h, 8]).piece
-      end
+      store_castle_short(origin_color)
+    end
+  end
+
+  def store_en_passant
+    self.last_targ_piece = board.square(en_pass_pos).piece
+  end
+
+  def store_castle_long(origin_color)
+    if origin_color == :White
+      self.last_targ_piece = board.square([:a, 1]).piece
+    else
+      self.last_targ_piece = board.square([:a, 8]).piece
+    end
+  end
+
+  def store_castle_short(origin_color)
+    if origin_color == :White
+      self.last_targ_piece = board.square([:h, 1]).piece
+    else
+      self.last_targ_piece = board.square([:h, 8]).piece
     end
   end
 
@@ -220,39 +245,52 @@ class State
   end
 
   def undo_special_move(orig_pos, targ_pos)
+    origin_color = board.square(orig_pos).piece.player.color
     if targ_pos == "EP"
-      board.square(en_pass_pos).piece = last_targ_piece
-      adj = board.square(orig_pos).piece.player.color == :White ? 1 : (-1)
-      pos_to_empty = [en_pass_pos[0], en_pass_pos[1] + adj]
-      board.square(pos_to_empty).piece = nil
+      undo_en_passant(origin_color)
     elsif targ_pos == "CL"
-      if board.square(orig_pos).piece.player.color == :White
-        board.square([:c, 1]).piece = nil
-
-        board.square([:a, 1]).piece = last_targ_piece
-        undo_adjust_unmoved_status([:a, 1])
-        board.square([:d, 1]).piece = nil
-      else
-        board.square([:c, 8]).piece = nil
-
-        board.square([:a, 8]).piece = last_targ_piece
-        undo_adjust_unmoved_status([:a, 8])
-        board.square([:d, 8]).piece = nil
-      end
+      undo_castle_long(origin_color)
     else
-      if board.square(orig_pos).piece.player.color == :White
-        board.square([:g, 1]).piece = nil
+      undo_castle_short(origin_color)
+    end
+  end
 
-        board.square([:h, 1]).piece = last_targ_piece
-        undo_adjust_unmoved_status([:h, 1])
-        board.square([:f, 1]).piece = nil
-      else
-        board.square([:g, 8]).piece = nil
+  def undo_en_passant(origin_color)
+    board.square(en_pass_pos).piece = last_targ_piece
+    adj = origin_color == :White ? 1 : (-1)
+    pos_to_empty = [en_pass_pos[0], en_pass_pos[1] + adj]
+    board.square(pos_to_empty).piece = nil
+  end
 
-        board.square([:h, 8]).piece = last_targ_piece
-        undo_adjust_unmoved_status([:h, 8])
-        board.square([:f, 8]).piece = nil
-      end
+  def undo_castle_long(origin_color)
+    if origin_color == :White
+      board.square([:c, 1]).piece = nil
+
+      board.square([:a, 1]).piece = last_targ_piece
+      undo_adjust_unmoved_status([:a, 1])
+      board.square([:d, 1]).piece = nil
+    else
+      board.square([:c, 8]).piece = nil
+
+      board.square([:a, 8]).piece = last_targ_piece
+      undo_adjust_unmoved_status([:a, 8])
+      board.square([:d, 8]).piece = nil
+    end
+  end
+
+  def undo_castle_short(origin_color)
+    if origin_color == :White
+      board.square([:g, 1]).piece = nil
+
+      board.square([:h, 1]).piece = last_targ_piece
+      undo_adjust_unmoved_status([:h, 1])
+      board.square([:f, 1]).piece = nil
+    else
+      board.square([:g, 8]).piece = nil
+
+      board.square([:h, 8]).piece = last_targ_piece
+      undo_adjust_unmoved_status([:h, 8])
+      board.square([:f, 8]).piece = nil
     end
   end
 
@@ -265,11 +303,11 @@ class State
     over
   end
 
-  def pawn_for_promotion(targ_pos)
+  def pawn_for_promotion?(targ_pos)
     board.square(targ_pos).piece.is_a?(Pawn) && [1, 8].include?(targ_pos[1])
   end
 
-  def pawn_moved_two(orig_pos, targ_pos)
+  def pawn_moved_two?(orig_pos, targ_pos)
     difference = (orig_pos[1] - targ_pos[1]).abs
     board.square(targ_pos).piece.is_a?(Pawn) && difference == 2
   end

@@ -9,12 +9,6 @@ class Player
     @in_check = false
   end
 
-  # Though not required, color should be capitalized for ideal #mark output
-  def mark
-    "#{color}"[0]
-  end
-
-  # Though not required, color should be capitalized for ideal #to_s output
   def to_s
     "#{color} (#{name})"
   end
